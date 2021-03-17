@@ -3,7 +3,7 @@
 
  PyWinda library is developed to simplify the generic calculations for power and load analysis. 
 
- * For a complete documentation click [here!](https://github.com/PyWinda/pywinda)
+ * For a complete documentation click [here!](https://pywinda.readthedocs.io/en/latest/)
 
  If you want to contribute to PyWinda library:
 
