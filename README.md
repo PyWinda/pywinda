@@ -1,7 +1,7 @@
 # PyWinda
 \----------------------------------------------------------------------------------------------
 
- PyWinda library is developed to simplify the generic calculations for power and load analysis. 
+ PyWinda library is developed to simplify the power and load calculations. 
 
  * For a complete documentation click [here!](https://pywinda.readthedocs.io/en/latest/)
 
