@@ -374,7 +374,7 @@ class windFarm:
 
 class SRT:
     """
-        Creates a single rotor turbine (SRT)object with the given unique name.
+        Creates a single rotor turbine (SRT) object with the given unique name.
 
         :param srtUniqueID: [*req*] Unique Id of the wind farm as a string.
         :param diameter: [*opt*] diameter of the SRT.
