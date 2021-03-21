@@ -373,6 +373,27 @@ class windFarm:
             return "Under development"
 
 class SRT:
+    """
+        Creates a single rotor turbine (SRT)object with the given unique name.
+
+        :param srtUniqueID: [*req*] Unique Id of the wind farm as a string.
+        :param diameter: [*opt*] diameter of the SRT.
+        :param hubHeight: [*opt*] hub height of the SRT.
+        :param x_horizontal: [*opt*] x coordinate of the SRT.
+        :param y_vertical: [*opt*] y coordinate of the SRT.
+
+        :Example:
+
+            >>> WT1=SRT("TheWT1",diameter=150)
+            >>> print(WT1.info)
+                  Property    Value
+            0  Unique Name   TheWT1
+            1     Diameter      150
+            2         Area  17671.5
+
+        \-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    """
     created_SRTs=[]
     def __init__(self,srtUniqueID,diameter=float("NaN"),hubHeigt=float("NaN"),x_horizontal=float("NaN"),y_vertical=float("NaN")):
         SRT.created_SRTs.append(srtUniqueID)
@@ -381,6 +402,32 @@ class SRT:
         self.hubHeight=hubHeigt
         self.x_horizontal=x_horizontal
         self.y_vertical=y_vertical
+        self.area=0.25*np.pi*self.diameter**2
+
+    @property
+    def info(self):
+        """
+        Returns a data frame containing information about the wind turbine.
+
+        :param None:
+
+        :Example:
+
+            >>> Curslack = windFarm("Curslack_farm")
+            >>> WT1 = Curslack.addTurbine("C_WT1", hubHeigt=120, diameter=120, x_horizontal=480331, y_vertical=4925387)
+            >>> print(WT1.info)
+                  Property    Value
+            0  Unique Name    C_WT1
+            1     Diameter      120
+            2         Area  11309.7
+
+        \-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        """
+
+        infoDic={"Property":["Unique Name", "Diameter", "Area"],"Value":[self.uID, self.diameter, self.area]}
+        return pd.DataFrame(infoDic)
+
 
 class MRT(SRT):
     pass
