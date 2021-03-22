@@ -414,7 +414,7 @@ class SRT:
         :Example:
 
             >>> Curslack = windFarm("Curslack_farm")
-            >>> WT1 = Curslack.addTurbine("C_WT1", hubHeigt=120, diameter=120, x_horizontal=480331, y_vertical=4925387)
+            >>> WT1 = Curslack.addTurbine("C_WT1", hubHeigt=120, diameter=120)
             >>> print(WT1.info)
                   Property    Value
             0  Unique Name    C_WT1
