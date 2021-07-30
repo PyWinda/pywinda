@@ -1,7 +1,8 @@
-from pywinda import pywinda
+from pywinda import pywinda as pd
 def test_cAngle():
-    assert pywinda.cAngle(487)==127
+    assert pd.cAngle(487)==127
     return 0
+
 
 
 print("heloo")
