@@ -23,7 +23,7 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-#   setup_requires=['pytest-runner'], #Ignoring the recommended tests
-#   tests_require=['pytest'], #Ignoring the recommended tests
-#    test_suite='tests', #Ignoring the recommended tests
+   setup_requires=['pytest-runner'], #Ignoring the recommended tests
+   tests_require=['pytest'], #Ignoring the recommended tests
+   test_suite='tests', #Ignoring the recommended tests
 )
