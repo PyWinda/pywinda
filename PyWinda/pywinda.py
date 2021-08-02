@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
-import OM_module
+from PyWinda import OM_module as om
 
-
+om.dummy(3,4)
 # ///////////////////// miscellaneous functions
 def cAngle(i):
    x=i % 360
@@ -12,15 +12,11 @@ def weib(x,A,k): #A is the scale and k is the shape factor
     return (k / A) * (x / A)**(k - 1) * np.exp(-(x / A)**k) #This function show the probabilty of occurence of a specific wind speed.
 
 # ////////////////////
-
-
-
-
 # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class environment:
     """
-       Creates the stand-alone environment with the given unique ID. Some generic conditions are added by default. See example below.
+       Creates the stand-alone environment with the given unique ID. Some generic conditions are added by default. See example below:
 
        :param uniqueID: [*req*] the given unique ID.
 
@@ -35,7 +31,7 @@ class environment:
            >>> print(Env.conditions['Wind speeds']) # doctest:+ELLIPSIS
            [0.0, 0.5, 1.0, 1.5, 2.0, ...]
 
-       \----------------------------------------------------------------------------------------------------------------------------------------------------------
+       \\----------------------------------------------------------------------------------------------------------------------------------------------------------
 
     """
     created_environments=[]
@@ -80,7 +76,7 @@ class environment:
         :param sectorNames: [*opt*] names of the sectors given by user or default names for n=12.
 
         :Example:
-        
+
             >>> Env=environment("C_Env")
             >>> print(Env.makeSectors())
                   N_0  NNE_30  NEN_60   E_90  ...  WSW_240  W_270  WNW_300  NNW_330
@@ -118,7 +114,7 @@ class environment:
             [30 rows x 12 columns]
 
 
-        
+
         \-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
           """
@@ -171,11 +167,10 @@ class windFarm:
     :param uniqueID: [*req*] Unique Id of the wind farm as a string.
 
     :Example:
-
-        >>> windFarmNameByUser = windFarm("Curslack")
-         >>> print(windFarmNameByUser==Curslack)
+        >>> from PyWinda import pywinda as pw
+        >>> windFarmNameByUser = pw.windFarm("Curslack")
+        >>> print(pw.Curslack==windFarmNameByUser)
         True
-
 
     \-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -216,25 +211,25 @@ class windFarm:
 
     @property #This helps to protect the info from direct changes by user
     def info(self):
-        """
-        Returns a data frame containing all the information about the wind farm.
-
-        :param None:
-
-        :Example:
-
-            >>> #DanTysk=windFarm("USEr")
-            >>> #print(DanTysk.info)
-                     Property                  Value
-            0       Unique ID                DanTysk
-            1    Created SRTs  [D_WT1, D_WT2, D_WT3]
-            2    Created MRTs               [D_MWT4]
-            3  Number of SRTs                      3
-            4  Number of MRTs                      1
-
-        \-----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-        """
+        # """
+        # Returns a data frame containing all the information about the wind farm.
+        #
+        # :param None:
+        #
+        # :Example:
+        #
+        #     >>> #DanTysk=windFarm("USEr")
+        #     >>> #print(DanTysk.info)
+        #              Property                  Value
+        #     0       Unique ID                DanTysk
+        #     1    Created SRTs  [D_WT1, D_WT2, D_WT3]
+        #     2    Created MRTs               [D_MWT4]
+        #     3  Number of SRTs                      3
+        #     4  Number of MRTs                      1
+        #
+        # \-----------------------------------------------------------------------------------------------------------------------------------------------------------
+        #
+        # """
 
 
         statistics={"Property":["Unique ID","Created SRTs", "Created MRTs","Number of SRTs","Number of MRTs"],
@@ -242,49 +237,49 @@ class windFarm:
         return pd.DataFrame(statistics)
     @property
     def assets(self):
-        """
-        Returns all the unique IDs of all the assets (e.g. single rotor turbines, multirotor tubines, met masts, etc.) in the wind farm.
-
-        :param None:
-
-        :Example:
-
-            >>> #DanTysk.assets
-            ['D_WT1', 'D_WT2', 'D_WT3', 'D_MWT4']
-
-        \-----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-        """
+        # """
+        # Returns all the unique IDs of all the assets (e.g. single rotor turbines, multirotor tubines, met masts, etc.) in the wind farm.
+        #
+        # :param None:
+        #
+        # :Example:
+        #
+        #     >>> #DanTysk.assets
+        #     ['D_WT1', 'D_WT2', 'D_WT3', 'D_MWT4']
+        #
+        # \-----------------------------------------------------------------------------------------------------------------------------------------------------------
+        #
+        # """
         self.allassets=self.createdSRTs+self.createdMRTs#keeps the record of all assets in the wind farm
         return self.allassets
 
 
 
     def addTurbine(self,uniqueID,turbineType="SRT",diameter=float("NaN"),hubHeigt=float("NaN"),x_horizontal=float("NaN"),y_vertical=float("NaN")): ##This function helps to create a wind turbine and keep internal (inside the class) track of its name. It is not a deep copy, rather a reference.
-        """
-        By default adds a single rotor turbine (SRT) to the related windfarm. Returns the created wind turbine with the given unique ID.
-        The wind turbine would be callable via its unique name and via the assigned variable by user. Note that the referenced unique id is temporarly stored in library. Thus when calling the turbine via unique id, it should be prefixed by library name pywinda. See example below.
-
-        :param uniqueID: [*req*] Unique ID of the wind turbine as string
-        :param turbineType: [*opt*] Type of turbine as string: 'SRT' or 'MRT'
-        :param diameter: [*opt*] Diameter of the turbine as float
-        :param hubHeigt: [*opt*] Hub height as a float
-        :param x_horizontal: [*opt*] Horizontal coordinate of the turbine as float
-        :param y_vertical: [*opt*] Vertical coordinate of the the turbine as float
-
-        :Example:
-
-            >>> #DanTysk=windFarm("TheDanTysk")
-            >>> #WT1=DanTysk.addTurbine("D_WT1")
-            >>> #WT2=DanTysk.addTurbine("D_WT2",diameter=120)
-            >>> #WT3=DanTysk.addTurbine("D_WT3",x_horizontal=580592,y_vertical=5925253)
-            >>> #WT3.diameter=150 #Assiging WT3 diameter after creation.
-            >>> #print(WT1==D_WT1)
-            True
-
-        \-----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-        """
+        # """
+        # By default adds a single rotor turbine (SRT) to the related windfarm. Returns the created wind turbine with the given unique ID.
+        # The wind turbine would be callable via its unique name and via the assigned variable by user. Note that the referenced unique id is temporarly stored in library. Thus when calling the turbine via unique id, it should be prefixed by library name pywinda. See example below.
+        #
+        # :param uniqueID: [*req*] Unique ID of the wind turbine as string
+        # :param turbineType: [*opt*] Type of turbine as string: 'SRT' or 'MRT'
+        # :param diameter: [*opt*] Diameter of the turbine as float
+        # :param hubHeigt: [*opt*] Hub height as a float
+        # :param x_horizontal: [*opt*] Horizontal coordinate of the turbine as float
+        # :param y_vertical: [*opt*] Vertical coordinate of the the turbine as float
+        #
+        # :Example:
+        #
+        #     >>> #DanTysk=windFarm("TheDanTysk")
+        #     >>> #WT1=DanTysk.addTurbine("D_WT1")
+        #     >>> #WT2=DanTysk.addTurbine("D_WT2",diameter=120)
+        #     >>> #WT3=DanTysk.addTurbine("D_WT3",x_horizontal=580592,y_vertical=5925253)
+        #     >>> #WT3.diameter=150 #Assiging WT3 diameter after creation.
+        #     >>> #print(WT1==D_WT1)
+        #     True
+        #
+        # \-----------------------------------------------------------------------------------------------------------------------------------------------------------
+        #
+        # """
 
         if uniqueID in self.createdSRTs: #Checks if the given unique Id already exists in the wind farm
             print("A wind turbine with the same unique ID in wind farm [",str(self.uID), "] already exists. New turbine not added.")
@@ -309,20 +304,20 @@ class windFarm:
 
             return toUserVariable
     def addEnvironment(self,envName):
-        """
-        Creates environment for the referenced wind farm. Parameters of the environment (e.g. temperature, pressure, wind regime etc.) can be assigned later.
-        The environment would be callable via its unique name and the assigned variable by user. When using the unique Id, it should be prefixed witht he library name pywinda. See example.
-
-        :param envName: [*req*] Environment name
-
-        :Example:
-
-            # >>> DanTysk=windFarm("DanTysk")
-
-
-        \-----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-        """
+        # """
+        # Creates environment for the referenced wind farm. Parameters of the environment (e.g. temperature, pressure, wind regime etc.) can be assigned later.
+        # The environment would be callable via its unique name and the assigned variable by user. When using the unique Id, it should be prefixed witht he library name pywinda. See example.
+        #
+        # :param envName: [*req*] Environment name
+        #
+        # :Example:
+        #
+        #     # >>> DanTysk=windFarm("DanTysk")
+        #
+        #
+        # \-----------------------------------------------------------------------------------------------------------------------------------------------------------
+        #
+        # """
 
 
 
@@ -343,29 +338,29 @@ class windFarm:
 
             return toUserVariable
     def distances(self, assets=[]):#From this point there would be a global convention of naming the property which shares two turbines in a "from" to "to" convention. For example distanceWT1toWT2 means the distance from WT1 to WT2
-        """
-        Returns the data frame with all the distances between assets in the wind farm or between those given in the assets list.
-
-        :param assets: [*opt*] Unique ID or object name of the assets
-
-        :Example:
-
-            >>> #Curslack = windFarm("Curslack_farm")
-            >>> #WT1 = Curslack.addTurbine("C_WT1", x_horizontal=480331, y_vertical=4925387)
-            >>> #WT2 = Curslack.addTurbine("C_WT2", x_horizontal=480592, y_vertical=4925253)
-            >>> #WT3 = Curslack.addTurbine("C_WT3", x_horizontal=480886, y_vertical=4925166)
-            >>> #WT4 = Curslack.addTurbine("C_MWT4",x_horizontal=480573, y_vertical=4925712)
-            >>> #print(Curslack.distances())
-                   Assets       C_WT1       C_WT2       C_WT3      C_MWT4      C_MWT5
-                0   C_WT1    0.000000  293.388821  597.382624  405.202419  551.515186
-                1   C_WT2  293.388821    0.000000  306.602348  459.393078  421.808013
-                2   C_WT3  597.382624  306.602348    0.000000  629.352842  428.164688
-                3  C_MWT4  405.202419  459.393078  629.352842    0.000000  295.465734
-                4  C_MWT5  551.515186  421.808013  428.164688  295.465734    0.000000
-
-        \-----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-        """
+        # """
+        # Returns the data frame with all the distances between assets in the wind farm or between those given in the assets list.
+        #
+        # :param assets: [*opt*] Unique ID or object name of the assets
+        #
+        # :Example:
+        #
+        #     >>> #Curslack = windFarm("Curslack_farm")
+        #     >>> #WT1 = Curslack.addTurbine("C_WT1", x_horizontal=480331, y_vertical=4925387)
+        #     >>> #WT2 = Curslack.addTurbine("C_WT2", x_horizontal=480592, y_vertical=4925253)
+        #     >>> #WT3 = Curslack.addTurbine("C_WT3", x_horizontal=480886, y_vertical=4925166)
+        #     >>> #WT4 = Curslack.addTurbine("C_MWT4",x_horizontal=480573, y_vertical=4925712)
+        #     >>> #print(Curslack.distances())
+        #            Assets       C_WT1       C_WT2       C_WT3      C_MWT4      C_MWT5
+        #         0   C_WT1    0.000000  293.388821  597.382624  405.202419  551.515186
+        #         1   C_WT2  293.388821    0.000000  306.602348  459.393078  421.808013
+        #         2   C_WT3  597.382624  306.602348    0.000000  629.352842  428.164688
+        #         3  C_MWT4  405.202419  459.393078  629.352842    0.000000  295.465734
+        #         4  C_MWT5  551.515186  421.808013  428.164688  295.465734    0.000000
+        #
+        # \-----------------------------------------------------------------------------------------------------------------------------------------------------------
+        #
+        # """
         if len(assets)==0: #The user should give the set of turbines here, if not the function will calculate and return all the distances between all the turbines in that wind farm.
             distancesDic={}
             distancesDic["Assets"]=self.assets
@@ -384,29 +379,29 @@ class windFarm:
             print("To be done for a given set of turbines' unique names")
             return "Under development"
     def coordinates(self, assets=[]):
-        """
-        Returns the data frame with all assets' x and y coordinates if the assets list is empty, otherwise only for the given set of assets.
-
-        :param assets: [*opt*] Unique ID or object name of the assets
-
-        :Example:
-
-              >>> #Curslack = windFarm("Curslack_farm")
-              >>> #WT1 = Curslack.addTurbine("C_WT1", x_horizontal=480331, y_vertical=4925387)
-              >>> #WT2 = Curslack.addTurbine("C_WT2", x_horizontal=480592, y_vertical=4925253)
-              >>> #WT3 = Curslack.addTurbine("C_WT3", x_horizontal=480886, y_vertical=4925166)
-              >>> #WT4 = Curslack.addTurbine("C_MWT4",x_horizontal=480573, y_vertical=4925712)
-              >>> #print(Curslack.coordinates())
-                    Assets  x_coor   y_coor
-                    C_WT1   480331  4925387
-                    C_WT2   480592  4925253
-                    C_WT3   480886  4925166
-                    C_MWT4  480573  4925712
-                    C_MWT5  480843  4925592
-
-        \-----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-              """
+        # """
+        # Returns the data frame with all assets' x and y coordinates if the assets list is empty, otherwise only for the given set of assets.
+        #
+        # :param assets: [*opt*] Unique ID or object name of the assets
+        #
+        # :Example:
+        #
+        #       >>> #Curslack = windFarm("Curslack_farm")
+        #       >>> #WT1 = Curslack.addTurbine("C_WT1", x_horizontal=480331, y_vertical=4925387)
+        #       >>> #WT2 = Curslack.addTurbine("C_WT2", x_horizontal=480592, y_vertical=4925253)
+        #       >>> #WT3 = Curslack.addTurbine("C_WT3", x_horizontal=480886, y_vertical=4925166)
+        #       >>> #WT4 = Curslack.addTurbine("C_MWT4",x_horizontal=480573, y_vertical=4925712)
+        #       >>> #print(Curslack.coordinates())
+        #             Assets  x_coor   y_coor
+        #             C_WT1   480331  4925387
+        #             C_WT2   480592  4925253
+        #             C_WT3   480886  4925166
+        #             C_MWT4  480573  4925712
+        #             C_MWT5  480843  4925592
+        #
+        # \-----------------------------------------------------------------------------------------------------------------------------------------------------------
+        #
+        #       """
 
         if len(assets) == 0:
             coordinatesDic={}
@@ -421,27 +416,27 @@ class windFarm:
             return "Under development"
 
 class SRT:
-    """
-        Creates a single rotor turbine (SRT) object with the given unique name.
-
-        :param srtUniqueID: [*req*] Unique Id of the wind farm as a string.
-        :param diameter: [*opt*] diameter of the SRT.
-        :param hubHeight: [*opt*] hub height of the SRT.
-        :param x_horizontal: [*opt*] x coordinate of the SRT.
-        :param y_vertical: [*opt*] y coordinate of the SRT.
-
-        :Example:
-
-            >>> WT1=SRT("TheWT1",diameter=150)
-            >>> print(WT1.info)
-                  Property    Value
-            0  Unique Name   TheWT1
-            1     Diameter      150
-            2         Area  17671.5
-
-        \-----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    """
+    # """
+    #     Creates a single rotor turbine (SRT) object with the given unique name.
+    #
+    #     :param srtUniqueID: [*req*] Unique Id of the wind farm as a string.
+    #     :param diameter: [*opt*] diameter of the SRT.
+    #     :param hubHeight: [*opt*] hub height of the SRT.
+    #     :param x_horizontal: [*opt*] x coordinate of the SRT.
+    #     :param y_vertical: [*opt*] y coordinate of the SRT.
+    #
+    #     :Example:
+    #
+    #         >>> WT1=SRT("TheWT1",diameter=150)
+    #         >>> print(WT1.info)
+    #               Property    Value
+    #         0  Unique Name   TheWT1
+    #         1     Diameter      150
+    #         2         Area  17671.5
+    #
+    #     \-----------------------------------------------------------------------------------------------------------------------------------------------------------
+    #
+    # """
     created_SRTs=[]
     def __init__(self,srtUniqueID,diameter=float("NaN"),hubHeigt=float("NaN"),x_horizontal=float("NaN"),y_vertical=float("NaN")):
         SRT.created_SRTs.append(srtUniqueID)
@@ -455,24 +450,24 @@ class SRT:
 
     @property
     def info(self):
-        """
-        Returns a data frame containing information about the wind turbine.
-
-        :param None:
-
-        :Example:
-
-            >>> Curslack = windFarm("Curslack_farm")
-            >>> WT1 = Curslack.addTurbine("C_WT1", hubHeigt=120, diameter=120)
-            >>> print(WT1.info)
-                  Property    Value
-            0  Unique Name    C_WT1
-            1     Diameter      120
-            2         Area  11309.7
-
-        \-----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-        """
+        # """
+        # Returns a data frame containing information about the wind turbine.
+        #
+        # :param None:
+        #
+        # :Example:
+        #
+        #     >>> Curslack = windFarm("Curslack_farm")
+        #     >>> WT1 = Curslack.addTurbine("C_WT1", hubHeigt=120, diameter=120)
+        #     >>> print(WT1.info)
+        #           Property    Value
+        #     0  Unique Name    C_WT1
+        #     1     Diameter      120
+        #     2         Area  11309.7
+        #
+        # \-----------------------------------------------------------------------------------------------------------------------------------------------------------
+        #
+        # """
 
         infoDic={"Property":["Unique Name", "Diameter", "Area"],"Value":[self.uID, self.diameter, self.area]}
         return pd.DataFrame(infoDic)
@@ -486,7 +481,7 @@ class MRT(SRT):
 
 
 
-if __name__=='__main__': ##This section is made for tests. A more comprehensive test strategy will be developed later. Here the test can only check for syntax error, but to ensure script gives true resutls test mechanism should be developed.
+if __name__=='__main__':
     print("Notin")
     windFarmNameByUser = windFarm("Curslack")
     print(windFarmNameByUser==Curslack)
