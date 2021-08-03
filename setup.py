@@ -16,11 +16,11 @@ setup(
     project_urls={
         "Bug Tracker": "https://github.com/PyWinda/pywinda/issues",
     },
-    license='MIT',
+    license='BSD-3-Clause',
     install_requires=['pandas','numpy'],
         classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
     ],
    setup_requires=['pytest-runner'], #Ignoring the recommended tests
