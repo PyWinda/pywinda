@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 from PyWinda import OM_module as om
 
-om.dummy(3,4)
 # ///////////////////// miscellaneous functions
 def cAngle(i):
    x=i % 360

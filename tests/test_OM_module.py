@@ -1,4 +1,4 @@
-from pywinda import OM_module
+from PyWinda import OM_module
 import pytest
 
 def testing_empty():
