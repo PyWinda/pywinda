@@ -17,7 +17,7 @@ setup(
         "Bug Tracker": "https://github.com/PyWinda/pywinda/issues",
     },
     license='BSD-3-Clause',
-    install_requires=['pandas','numpy'],
+    install_requires=['pandas','numpy', 'matplotlib'],
         classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: BSD License",
