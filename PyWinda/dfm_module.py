@@ -4,16 +4,16 @@ import numpy as np
 
 ###################################
 #####The drafts section ###########
-x=np.random.uniform(3,6,100,500)
+# x=np.random.uniform(3,6,100)
 
-y=np.random.triangular(3,6,100,500)
-a=0
-for x in y:
-    if x==6:
-        a=a+1
-    else:
-        print(x)
-print(a)
+# y=np.random.triangular(3,6,100,500)
+# a=0
+# for x in y:
+#     if x==6:
+#         a=a+1
+#     else:
+#         print(x)
+# print(a)
 # print(a/50)
 # print(y)
 def dummy(a,b):
