@@ -28,12 +28,14 @@ plt.show()
 
 def number_of_simsulaions(standard_error_of_mean,confidence_level,standard_normal_statistics,standard_deviaton_of_the_output):
     """
-    This function estimates the recommended number of Monte Carlo Simulation given the parameters.
+        This function estimates the recommended number of Monte Carlo Simulation given the parameters.
 
-    :param standard_error_of_mean: [*req*] the given unique ID.
-    :param confidence_level: [*req*] the given unique ID.
-    :param standard_normal_statistics: [*req*] the given unique ID.
-    :param standard_deviaton_of_the_output: [*req*] the given unique ID.
+        :param standard_error_of_mean: [*req*] the given unique ID.
+        :param confidence_level: [*req*] the given unique ID.
+        :param standard_normal_statistics: [*req*] the given unique ID.
+        :param standard_deviaton_of_the_output: [*req*] the given unique ID.
+         \\----------------------------------------------------------------------------------------------------------------------------------------------------------
+
     """
 
     x=1
