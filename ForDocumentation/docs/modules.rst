@@ -4,5 +4,5 @@ PyWinda
 .. toctree::
    :maxdepth: 4
 
-   OM_module
+   dfm_module
    pywinda
