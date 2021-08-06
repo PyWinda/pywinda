@@ -34,6 +34,7 @@ def number_of_simsulaions(standard_error_of_mean,confidence_level,standard_norma
         :param confidence_level: [*req*] the given unique ID.
         :param standard_normal_statistics: [*req*] the given unique ID.
         :param standard_deviaton_of_the_output: [*req*] the given unique ID.
+
          \\----------------------------------------------------------------------------------------------------------------------------------------------------------
 
     """
