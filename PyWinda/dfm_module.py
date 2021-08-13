@@ -9,21 +9,6 @@ import matplotlib.pyplot as plt
 
 def number_of_simsulaions(standard_error_of_mean,confidence_level,standard_normal_statistics,standard_deviaton_of_the_output):
     """
-        This function estimates the recommended number of Monte Carlo Simulations for the given following set of parameters.
-
-        :param standard_error_of_mean: [*req*] standard error of the mean.
-        :param confidence_level: [*req*] the confidence level.
-        :param standard_normal_statistics: [*req*] the standard cumulative normal distribution vale.
-        :param standard_deviaton_of_the_output: [*req*] standard deviation of the output.
-
-        :Example:
-
-                   >>> Env = environment("C_Env")
-                   # None
-
-
-         \\----------------------------------------------------------------------------------------------------------------------------------------------------------
-
     """
 
 
@@ -38,6 +23,8 @@ def normal_dist(mean,sd,a=0,b=0,num=100,plot=False):
         :param b: [*optional*] the end of the interval of the possible values
         :param num: [*optional*] resolution of the interval.
         :return x,y, figure: x is the 1D-array of considered interval, y is the 1D-array of corresponding probability values, and if the plot option is set to True a figure will also be outputed.
+
+        \\----------------------------------------------------------------------------------------------------------------------------------------------------------
 
     """
     a=mean-5*sd
