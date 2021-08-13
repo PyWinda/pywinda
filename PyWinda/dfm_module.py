@@ -34,7 +34,7 @@ def normal_dist(mean,sd,a=0,b=0,num=100,plot=False):
 
         :param mean: [*req*] the mean of the distribution
         :param sd: [*req*]  the standard deviation of the distribution
-        :parm a: [*optional*] the start of the interval of the possible values
+        :param a: [*optional*] the start of the interval of the possible values
         :param b: [*optional*] the end of the interval of the possible values
         :param num: [*optional*] resolution of the interval.
         :return x,y, figure: x is the 1D-array of considered interval, y is the 1D-array of corresponding probability values, and if the plot option is set to True a figure will also be outputed.
