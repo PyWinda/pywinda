@@ -34,7 +34,7 @@ def normal_dist(mean,sd,a=0,b=0,num=100,plot=False):
     for i in x:
         y.append((1/(sd*np.sqrt(2*np.pi)))*np.exp(-0.5*((i-mean)/sd)**2))
     if plot ==True:
-        figure,ax=pwploter.plotg(x,y,title="Normal Distribution",xlabel='Values [-]',ylabel='Probability [-]',text={'mean':mean,'Standard deviation':sd})
+        figure,ax=pwploter.plot(x,y,title="Normal Distribution",xlabel='Values [-]',ylabel='Probability [-]',text={'mean':mean,'Standard deviation':sd})
         return y, x, figure # returns y and x and the final figure if plot
     return y,x  #returns y and x if not plot is done
 
@@ -45,8 +45,22 @@ def normal_dist(mean,sd,a=0,b=0,num=100,plot=False):
 #####The drafts section ###########
 
 a,b,fig=normal_dist(0,1,plot=True)
-fig.savefig("This.pdf")
+# fig.savefig("This.pdf")
 plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
