@@ -24,7 +24,7 @@ class environment:
            >>> #Creates an environment without assigning it to any wind farm.
            >>> print(Env.conditions.keys())
            dict_keys(['Wind degrees', 'Wind speeds'])
-           >>> print(Env.conditions['Wind degrees']) # doctest:+ELLIPSIS
+           >>> print(Env.conditions['Wind degrees']) #doctest:+ELLIPSIS
            [0, 1, 2, 3, ...]
            >>> print(Env.conditions['Wind speeds']) # doctest:+ELLIPSIS
            [0.0, 0.5, 1.0, 1.5, 2.0, ...]
@@ -56,9 +56,9 @@ class environment:
                >>> print(D_Env.conditions.keys())
                dict_keys(['Wind degrees', 'Wind speeds'])
                >>> print(D_Env.conditions['Wind degrees']) # doctest:+ELLIPSIS
-               [0, 1, 2, 3, ...] #ends at 359 degrees.
+               [0, 1, 2, 3, ...]
                >>> print(D_Env.conditions['Wind speeds']) # doctest:+ELLIPSIS
-               [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, ...] #ends at 50.0 m/s
+               [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, ...]
 
            \----------------------------------------------------------------------------------------------------------------------------------------------------------
 
