@@ -1,5 +1,4 @@
-from PyWinda import pywinda as pw
-from PyWinda import pwploter
+import pwploter
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -44,9 +43,9 @@ def normal_dist(mean,sd,a=0,b=0,num=100,plot=False):
 ###################################
 #####The drafts section ###########
 
-a,b,fig=normal_dist(0,1,plot=True)
-# fig.savefig("This.pdf")
-plt.show()
+# a,b,fig=normal_dist(0,1,plot=True)
+# # fig.savefig("This.pdf")
+# plt.show()
 
 
 

@@ -1,43 +1,67 @@
-from PyWinda import pywinda as pw
+import pwploter
 import numpy as np
+import matplotlib.pyplot as plt
+
+
+
+
+
+def number_of_simsulaions(standard_error_of_mean,confidence_level,standard_normal_statistics,standard_deviaton_of_the_output):
+    """
+    """
+
+
+
+def normal_dist(mean,sd,a=0,b=0,num=100,plot=False):
+    """
+        This function generates the normal (Gaussian) distribution, for a given mean value and standard distribution in an interval of a to b or a default of -5*standard deviation to 5*standard defiations.
+
+        :param mean: [*req*] the mean of the distribution
+        :param sd: [*req*]  the standard deviation of the distribution
+        :param a: [*optional*] the start of the interval of the possible values
+        :param b: [*optional*] the end of the interval of the possible values
+        :param num: [*optional*] resolution of the interval.
+        :return x,y, figure: x is the 1D-array of considered interval, y is the 1D-array of corresponding probability values, and if the plot option is set to True a figure will also be outputed.
+
+        \\----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    """
+    a=mean-5*sd
+    b=mean+5*sd
+    x=np.linspace(a,b,num) #creates the interval with the default number of seperation, here 100.
+    y=[] #the normal distribution values
+    for i in x:
+        y.append((1/(sd*np.sqrt(2*np.pi)))*np.exp(-0.5*((i-mean)/sd)**2))
+    if plot ==True:
+        figure,ax=pwploter.plot(x,y,title="Normal Distribution",xlabel='Values [-]',ylabel='Probability [-]',text={'mean':mean,'Standard deviation':sd})
+        return y, x, figure # returns y and x and the final figure if plot
+    return y,x  #returns y and x if not plot is done
+
+
 
 
 ###################################
 #####The drafts section ###########
-x=np.random.uniform(3,6,100,500)
 
-y=np.random.triangular(3,6,100,500)
-a=0
-for x in y:
-    if x==6:
-        a=a+1
-    else:
-        print(x)
-print(a)
-# print(a/50)
-# print(y)
-def dummy(a,b):
-    return a+b
+# a,b,fig=normal_dist(0,1,plot=True)
+# # fig.savefig("This.pdf")
+# plt.show()
 
-import matplotlib.pyplot as plt
-h = plt.hist(np.random.triangular(-3, 0, 8, 100000), bins=200,
-             density=True)
-plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #######The drafts section ends here###########
 ##############################################
-
-def number_of_simsulaions(standard_error_of_mean,confidence_level,standard_normal_statistics,standard_deviaton_of_the_output):
-    """
-        This function estimates the recommended number of Monte Carlo Simulation given the parameters.
-
-        :param standard_error_of_mean: [*req*] the given unique ID.
-        :param confidence_level: [*req*] the given unique ID.
-        :param standard_normal_statistics: [*req*] the given unique ID.
-        :param standard_deviaton_of_the_output: [*req*] the given unique ID.
-
-         \\----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    """
-
-    x=1
-    return x

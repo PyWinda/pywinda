@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-# from PyWinda import OM_module as om
 
 # ///////////////////// miscellaneous functions
 def cAngle(i):
