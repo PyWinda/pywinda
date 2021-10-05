@@ -4,6 +4,6 @@ PyWinda
 .. toctree::
    :maxdepth: 4
 
-   dfm_module
-   pwploter
+   Introduction
    pywinda
+   dfm_module
