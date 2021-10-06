@@ -21,11 +21,11 @@ class environment:
 
            >>> Env = environment("C_Env")
            >>> #Creates an environment without assigning it to any wind farm.
-           >>> print(Env.conditions.keys())
+           >>> print(Env.info.keys())
            dict_keys(['Wind degrees', 'Wind speeds', 'Pressure'])
-           >>> print(Env.conditions['Wind degrees']) #doctest:+ELLIPSIS
+           >>> print(Env.info['Wind degrees']) #doctest:+ELLIPSIS
            [0, 1, 2, 3, ...]
-           >>> print(Env.conditions['Wind speeds']) # doctest:+ELLIPSIS
+           >>> print(Env.info['Wind speeds']) # doctest:+ELLIPSIS
            [0.0, 0.5, 1.0, 1.5, 2.0, ...]
 
        \\----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -53,11 +53,11 @@ class environment:
 
                >>> dantysk=windFarm("DanTysk")
                >>> env=environment("D_Env")
-               >>> print(env.conditions.keys())
+               >>> print(env.info.keys())
                dict_keys(['Wind degrees', 'Wind speeds', 'Pressure'])
-               >>> print(env.conditions['Wind degrees']) # doctest:+ELLIPSIS
+               >>> print(env.info['Wind degrees']) # doctest:+ELLIPSIS
                [0, 1, 2, 3, ...]
-               >>> print(env.conditions['Wind speeds']) # doctest:+ELLIPSIS
+               >>> print(env.info['Wind speeds']) # doctest:+ELLIPSIS
                [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, ...]
 
            \----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -314,9 +314,9 @@ class windFarm:
 
             >>> DanTysk=windFarm("DanTysk2")
             >>> env=environment('normal1')
-            >>> print(env.conditions.keys()) #shows some of the conditions of the created environment
+            >>> print(env.info.keys()) #shows some of the conditions of the created environment
             dict_keys(['Wind degrees', 'Wind speeds', 'Pressure'])
-            >>> print(env.conditions['Pressure'])
+            >>> print(env.info['Pressure'])
             101325
             >>> DanTysk.assignEnvironment('normal1')
             >>> DanTysk.assignEnvironment('normal2')
