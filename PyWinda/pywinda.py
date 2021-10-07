@@ -13,7 +13,7 @@ def weib(x,A,k): #A is the scale and k is the shape factor
 
 class environment:
     """
-       Creates the stand-alone environment with the given unique ID. Some generic conditions are added by default. See example below:
+       Creates the stand-alone environment and returns it with the given unique ID. By default, wind speeds from 0 m/s to 50 m/s with an increment of 0.5 m/s and also 360 degree with 1 degree increment are also added. The temperature of 25 degree Celsius and pressure of 101325 Pa is assumed. See example below:
 
        :param uniqueID: [*req*] the given unique ID.
 
@@ -22,8 +22,8 @@ class environment:
            >>> Env = environment("C_Env")
            >>> #Creates an environment without assigning it to any wind farm.
            >>> print(Env.info.keys())
-           dict_keys(['Wind degrees', 'Wind speeds', 'Pressure'])
-           >>> print(Env.info['Wind degrees']) #doctest:+ELLIPSIS
+           dict_keys(['Wind directions', 'Wind speeds', 'Pressure', 'Temperature'])
+           >>> print(Env.info['Wind directions']) #doctest:+ELLIPSIS
            [0, 1, 2, 3, ...]
            >>> print(Env.info['Wind speeds']) # doctest:+ELLIPSIS
            [0.0, 0.5, 1.0, 1.5, 2.0, ...]
@@ -34,28 +34,41 @@ class environment:
     created_environments=[]
 
     def __init__(self, uniqueID):
-        self.uID = uniqueID
-        environment.created_environments.append(uniqueID)
+        if uniqueID in environment.created_environments: #Checks if the environment ID is already taken
+            raise Exception ("The environment unique ID [" + str(uniqueID) + "] is already taken.")
+        else:
+            if type(uniqueID) == str and len(uniqueID.split())==1:
+                if uniqueID in globals().keys(): #Checks if the given unique Id is not in conflict with user's already assigned variables.
+                    raise Exception ("Another object with the same uniqe ID globally exists. New environment not created.")
+                else:
+                    globals()[uniqueID] = self    #environment is dynamicall created and referenced with the unique ID to the users assigned variable.
+                    environment.created_environments.append(uniqueID) #we append the created environment to the list
+                    self.uID=uniqueID
+            else:
+                raise Exception("Unique ID should be a string without spaces.")
+
+
         self.__conditionsDic={}
-        self.__conditionsDic["Wind degrees"]=[i for i in range(0,360)] #degrees
-        self.__conditionsDic["Wind speeds"]=[i for i in np.arange(0,50.5,0.5)]#m/s
+        self.__conditionsDic["Wind directions"]=[i for i in range(0,360)] #degrees
+        self.__conditionsDic["Wind speeds"]=[i for i in np.arange(0,50.5,0.5)] #m/s
         self.__conditionsDic["Pressure"]= 101325 #pascals
+        self.__conditionsDic["Temperature"]=25 #celcius
         self.windSectors=None
 
     @property
     def info(self):
         """
-            Returns all the defined conditions of the environment. For this purpose windspeeds of 0 m/s to 50 m/s with an increment of 0.5 m/s is defined. Similarly, 360 degree directions with an increment of 1 degree is defined.
+            Returns all the defined conditions of the environment.
 
            :param None:
 
            :Example:
 
-               >>> dantysk=windFarm("DanTysk")
+               >>> dantysk=windfarm("DanTysk")
                >>> env=environment("D_Env")
                >>> print(env.info.keys())
-               dict_keys(['Wind degrees', 'Wind speeds', 'Pressure'])
-               >>> print(env.info['Wind degrees']) # doctest:+ELLIPSIS
+               dict_keys(['Wind directions', 'Wind speeds', 'Pressure', 'Temperature'])
+               >>> print(env.info['Wind directions']) # doctest:+ELLIPSIS
                [0, 1, 2, 3, ...]
                >>> print(env.info['Wind speeds']) # doctest:+ELLIPSIS
                [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, ...]
@@ -75,7 +88,7 @@ class environment:
 
         :Example:
 
-            >>> Env=environment("C_Env")
+            >>> Env=environment("C_Env2")
             >>> print(Env.makeSectors())
                   N_0  NNE_30  NEN_60   E_90  ...  WSW_240  W_270  WNW_300  NNW_330
             0   346.0    16.0    46.0   76.0  ...    226.0  256.0    286.0    316.0
@@ -152,7 +165,7 @@ class environment:
     def test(self):
         return self.uID
 
-class windFarm:
+class windfarm:
     """
     Creates wind farm object with the given unique ID. Pywinda will also create an internal shallow copy of the same windfarm object.
 
@@ -160,7 +173,7 @@ class windFarm:
 
     :Example:
         >>> from PyWinda import pywinda as pw
-        >>> curslack = pw.windFarm("Curslack_uID")
+        >>> curslack = pw.windfarm("Curslack_uID")
         >>> print(pw.Curslack_uID==curslack)
         True
 
@@ -170,7 +183,7 @@ class windFarm:
 
     created_windfarms=[]
     def __init__(self,uniqueID):
-        if uniqueID in windFarm.created_windfarms: #Checks if the wind farm ID is already taken
+        if uniqueID in windfarm.created_windfarms: #Checks if the wind farm ID is already taken
             raise Exception ("The wind farm unique ID [" + str(uniqueID) + "] is already taken.")
         else:
             if type(uniqueID) == str and len(uniqueID.split())==1:
@@ -178,7 +191,7 @@ class windFarm:
                     raise Exception ("Another object with the same uniqe ID globally exists. New wind farm not created.")
                 else:
                     globals()[uniqueID] = self    #wind farm is dynamicall created and referenced with the unique ID to the users assigned variable.
-                    windFarm.created_windfarms.append(uniqueID) #we append the created wind farm to the list
+                    windfarm.created_windfarms.append(uniqueID) #we append the created wind farm to the list
                     self.uID=uniqueID
             else:
                 raise Exception("Unique ID should be a string without spaces.")
@@ -199,7 +212,7 @@ class windFarm:
 
         :Example:
 
-            >>> curslack=windFarm("uID_Curslack")
+            >>> curslack=windfarm("uID_Curslack")
             >>> WT1=curslack.addTurbine('uID_WT1',turbineType='SRT',hubHeigt=120, x_horizontal=100,y_vertical=100)
             >>> WT2=curslack.addTurbine('uID_WT2',turbineType='SRT',hubHeigt=120, x_horizontal=150,y_vertical=150)
             >>> WT3=curslack.addTurbine('uID_MWT3',turbineType='MRT',hubHeigt=200, x_horizontal=300,y_vertical=300)
@@ -223,16 +236,16 @@ class windFarm:
     @property
     def assets(self):
         """
-        Returns all the unique IDs of all the assets (e.g. single rotor turbines, multirotor tubines, met masts, etc.) in the wind farm.
+        Returns all the unique IDs of all the assets in the windfarm e.g. single rotor turbines, multirotor tubines, met masts, etc.
 
         :param None:
 
         :Example:
 
-            >>> curslack=windFarm("uID_Curslack2")
-            >>> WT1=curslack.addTurbine('uID_WT11',turbineType='SRT',hubHeigt=120, x_horizontal=100,y_vertical=100)
-            >>> WT2=curslack.addTurbine('uID_WT12',turbineType='SRT',hubHeigt=120, x_horizontal=150,y_vertical=150)
-            >>> WT3=curslack.addTurbine('uID_MWT13',turbineType='MRT',hubHeigt=200, x_horizontal=300,y_vertical=300)
+            >>> curslack=windfarm("uID_Curslack2")
+            >>> WT1=curslack.addTurbine('uID_WT11',turbineType='SRT',hubHeigt=120)
+            >>> WT2=curslack.addTurbine('uID_WT12',turbineType='SRT',hubHeigt=120)
+            >>> WT3=curslack.addTurbine('uID_MWT13',turbineType='MRT',hubHeigt=200)
             >>> print(curslack.assets)
             ['uID_WT11', 'uID_WT12', 'uID_MWT13']
 
@@ -247,7 +260,7 @@ class windFarm:
     def addTurbine(self,uniqueID,turbineType="SRT",diameter=float("NaN"),hubHeigt=float("NaN"),x_horizontal=float("NaN"),y_vertical=float("NaN")): ##This function helps to create a wind turbine and keep internal (inside the class) track of its name. It is not a deep copy, rather a reference.
         """
         By default adds a single rotor turbine (SRT) to the related windfarm. Returns the created wind turbine with the given unique ID.
-        The wind turbine would be callable via its unique name and via the assigned variable by user. Note that the referenced unique id is temporarly stored in library. Thus when calling the turbine via unique id, it should be prefixed by library name pywinda. See example below.
+        The wind turbine would be callable via its unique name and via the assigned variable by user. Note that the referenced unique id is stored in library. Thus when calling the turbine via unique id, it should be prefixed by library name pywinda. See example below.
 
         :param uniqueID: [*req*] Unique ID of the wind turbine as string
         :param turbineType: [*opt*] Type of turbine as string: 'SRT' or 'MRT'
@@ -259,10 +272,12 @@ class windFarm:
         :Example:
 
             >>> from PyWinda import pywinda as pw
-            >>> curslack=pw.windFarm("uID_Curslack3")
+            >>> curslack=pw.windfarm("uID_Curslack3")
             >>> WT1=curslack.addTurbine('uID_WT14',turbineType='SRT',hubHeigt=120 )
-            >>> WT2=curslack.addTurbine('uID_WT15',turbineType='SRT',x_horizontal=150,y_vertical=150)
-            >>> WT3=curslack.addTurbine('uID_WT16',turbineType='MRT',hubHeigt=200, x_horizontal=300,y_vertical=300)
+            >>> WT2=curslack.addTurbine('uID_WT15',turbineType='SRT',x_horizontal=150,\
+            y_vertical=150)
+            >>> WT3=curslack.addTurbine('uID_WT16',turbineType='MRT',hubHeigt=200,\
+             x_horizontal=300,y_vertical=300)
             >>> WT3.diameter=150 #Assiging WT3 diameter after creation.
             >>> print(WT3==pw.uID_WT16)
             True
@@ -312,10 +327,11 @@ class windFarm:
 
         :Example:
 
-            >>> DanTysk=windFarm("DanTysk2")
+            >>> from PyWinda import pywinda as pw
+            >>> DanTysk=windfarm("DanTysk2")
             >>> env=environment('normal1')
             >>> print(env.info.keys()) #shows some of the conditions of the created environment
-            dict_keys(['Wind degrees', 'Wind speeds', 'Pressure'])
+            dict_keys(['Wind directions', 'Wind speeds', 'Pressure', 'Temperature'])
             >>> print(env.info['Pressure'])
             101325
             >>> DanTysk.assignEnvironment('normal1')
@@ -427,9 +443,9 @@ class windFarm:
 
 class SRT:
     """
-        Creates a single rotor turbine (SRT) object with the given unique name.
+        Creates single rotor turbine (SRT) object and returns it with the given unique name.
 
-        :param srtUniqueID: [*req*] Unique Id of the wind farm as a string.
+        :param srtUniqueID: [*req*] Unique Id of the wind turbine as a string.
         :param diameter: [*opt*] diameter of the SRT.
         :param hubHeight: [*opt*] hub height of the SRT.
         :param x_horizontal: [*opt*] x coordinate of the SRT.
@@ -439,10 +455,12 @@ class SRT:
 
             >>> WT1=SRT("TheWT1",diameter=150)
             >>> print(WT1.info)
-                  Property         Value
-            0  Unique Name        TheWT1
-            1     Diameter           150
-            2         Area  17671.458676
+                   Property         Value
+            0   Unique Name        TheWT1
+            1  x_horizontal           NaN
+            2    y_vertical           NaN
+            3      Diameter           150
+            4          Area  17671.458676
 
         \-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -468,19 +486,22 @@ class SRT:
         :Example:
 
             >>> from PyWinda import pywinda as pw
-            >>> Curslack = pw.windFarm("Curslack_farm")
+            >>> Curslack = pw.windfarm("Curslack_farm")
             >>> WT1 = Curslack.addTurbine("C_WT1", hubHeigt=120, diameter=120)
             >>> print(WT1.info)
-                  Property         Value
-            0  Unique Name         C_WT1
-            1     Diameter           120
-            2         Area  11309.733553
+                   Property         Value
+            0   Unique Name         C_WT1
+            1  x_horizontal           NaN
+            2    y_vertical           NaN
+            3      Diameter           120
+            4          Area  11309.733553
+
 
         \-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
         """
 
-        infoDic={"Property":["Unique Name", "Diameter", "Area"],"Value":[self.uID, self.diameter, self.area]}
+        infoDic={"Property":["Unique Name","x_horizontal","y_vertical", "Diameter", "Area"],"Value":[self.uID,self.x_horizontal,self.y_vertical, self.diameter, self.area]}
         return pd.DataFrame(infoDic)
 
 class MRT(SRT):
