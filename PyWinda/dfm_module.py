@@ -1,7 +1,7 @@
-import  pwploter
+import pwploter #only for documentation
+# from PyWinda import pwploter # only for pytest
 import numpy as np
 import matplotlib.pyplot as plt
-
 
 
 
@@ -77,11 +77,17 @@ def normal_dist(mean,sd,a=0,b=0,num=100,plot=False):
 ###################################
 #####The drafts section ###########
 
-a,b,fig=normal_dist(0,1,plot=True)
-# fig.savefig("This.pdf")
+# a,b,fig=normal_dist(0,1,plot=True)
+# # fig.savefig("This.pdf")
+# print("Look at me")
+# print (__name__)
+#
 # plt.show()
 
-
+y,x=normal_dist(0,1)
+# print(y)
+# print(x)
+# print(np.allclose([15,15,15,15], np.array([15,15,15,15])))
 
 
 

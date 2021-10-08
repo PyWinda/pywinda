@@ -340,6 +340,8 @@ class windfarm:
             >>> DanTysk.assignEnvironment('normal2')
             Traceback (most recent call last):
             Exception: The wind farm [DanTysk2] already has assigned environment [normal1]. New environment not added.
+            >>> print(pw.normal1==env)
+            True
 
 
         \-----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -374,18 +376,17 @@ class windfarm:
 
         :Example:
 
-            >>> #Curslack = windFarm("Curslack_farm")
-            >>> #WT1 = Curslack.addTurbine("C_WT1", x_horizontal=480331, y_vertical=4925387)
-            >>> #WT2 = Curslack.addTurbine("C_WT2", x_horizontal=480592, y_vertical=4925253)
-            >>> #WT3 = Curslack.addTurbine("C_WT3", x_horizontal=480886, y_vertical=4925166)
-            >>> #WT4 = Curslack.addTurbine("C_MWT4",x_horizontal=480573, y_vertical=4925712)
-            >>> #print(Curslack.distances())
-                   Assets       C_WT1       C_WT2       C_WT3      C_MWT4      C_MWT5
-                0   C_WT1    0.000000  293.388821  597.382624  405.202419  551.515186
-                1   C_WT2  293.388821    0.000000  306.602348  459.393078  421.808013
-                2   C_WT3  597.382624  306.602348    0.000000  629.352842  428.164688
-                3  C_MWT4  405.202419  459.393078  629.352842    0.000000  295.465734
-                4  C_MWT5  551.515186  421.808013  428.164688  295.465734    0.000000
+            >>> Curslack = windfarm("Curslack_farm")
+            >>> WT1 = Curslack.addTurbine("C_WT1", x_horizontal=480331, y_vertical=4925387)
+            >>> WT2 = Curslack.addTurbine("C_WT2", x_horizontal=480592, y_vertical=4925253)
+            >>> WT3 = Curslack.addTurbine("C_WT3", x_horizontal=480886, y_vertical=4925166)
+            >>> WT4 = Curslack.addTurbine("C_MWT4",x_horizontal=480573, y_vertical=4925712)
+            >>> print(Curslack.distances())
+               Assets       C_WT1       C_WT2       C_WT3      C_MWT4
+            0   C_WT1    0.000000  293.388821  597.382624  405.202419
+            1   C_WT2  293.388821    0.000000  306.602348  459.393078
+            2   C_WT3  597.382624  306.602348    0.000000  629.352842
+            3  C_MWT4  405.202419  459.393078  629.352842    0.000000
 
         \-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -416,12 +417,12 @@ class windfarm:
 
         :Example:
 
-              >>> #Curslack = windFarm("Curslack_farm")
-              >>> #WT1 = Curslack.addTurbine("C_WT1", x_horizontal=480331, y_vertical=4925387)
-              >>> #WT2 = Curslack.addTurbine("C_WT2", x_horizontal=480592, y_vertical=4925253)
-              >>> #WT3 = Curslack.addTurbine("C_WT3", x_horizontal=480886, y_vertical=4925166)
-              >>> #WT4 = Curslack.addTurbine("C_MWT4",x_horizontal=480573, y_vertical=4925712)
-              >>> #print(Curslack.coordinates())
+              >>> Curslack = windfarm("Curslack_farm")
+              >>> WT1 = Curslack.addTurbine("C_WT1", x_horizontal=480331, y_vertical=4925387)
+              >>> WT2 = Curslack.addTurbine("C_WT2", x_horizontal=480592, y_vertical=4925253)
+              >>> WT3 = Curslack.addTurbine("C_WT3", x_horizontal=480886, y_vertical=4925166)
+              >>> WT4 = Curslack.addTurbine("C_MWT4",x_horizontal=480573, y_vertical=4925712)
+              >>> print(Curslack.coordinates())
                     Assets  x_coor   y_coor
                     C_WT1   480331  4925387
                     C_WT2   480592  4925253
