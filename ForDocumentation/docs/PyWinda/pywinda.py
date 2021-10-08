@@ -166,6 +166,7 @@ class environment:
         return self.uID
 
 class windfarm:
+
     """
     Creates wind farm object with the given unique ID. Pywinda will also create an internal shallow copy of the same windfarm object.
 
@@ -205,6 +206,7 @@ class windfarm:
 
     @property #This helps to protect the info from direct changes by user
     def info(self):
+
         """
         Returns a data frame containing all the information about the wind farm.
 
@@ -235,6 +237,7 @@ class windfarm:
 
     @property
     def assets(self):
+
         """
         Returns all the unique IDs of all the assets in the windfarm e.g. single rotor turbines, multirotor tubines, met masts, etc.
 
@@ -258,6 +261,7 @@ class windfarm:
 
 
     def addTurbine(self,uniqueID,turbineType="SRT",diameter=float("NaN"),hubHeigt=float("NaN"),x_horizontal=float("NaN"),y_vertical=float("NaN")): ##This function helps to create a wind turbine and keep internal (inside the class) track of its name. It is not a deep copy, rather a reference.
+
         """
         By default adds a single rotor turbine (SRT) to the related windfarm. Returns the created wind turbine with the given unique ID.
         The wind turbine would be callable via its unique name and via the assigned variable by user. Note that the referenced unique id is stored in library. Thus when calling the turbine via unique id, it should be prefixed by library name pywinda. See example below.
@@ -274,10 +278,8 @@ class windfarm:
             >>> from PyWinda import pywinda as pw
             >>> curslack=pw.windfarm("uID_Curslack3")
             >>> WT1=curslack.addTurbine('uID_WT14',turbineType='SRT',hubHeigt=120 )
-            >>> WT2=curslack.addTurbine('uID_WT15',turbineType='SRT',x_horizontal=150,\
-            y_vertical=150)
-            >>> WT3=curslack.addTurbine('uID_WT16',turbineType='MRT',hubHeigt=200,\
-             x_horizontal=300,y_vertical=300)
+            >>> WT2=curslack.addTurbine('uID_WT15',turbineType='SRT',x_horizontal=150,y_vertical=150)
+            >>> WT3=curslack.addTurbine('uID_WT16',turbineType='MRT',hubHeigt=200,x_horizontal=300,y_vertical=300)
             >>> WT3.diameter=150 #Assiging WT3 diameter after creation.
             >>> print(WT3==pw.uID_WT16)
             True
@@ -319,6 +321,7 @@ class windfarm:
 
             return toUserVariable
     def assignEnvironment(self,envName):
+
         """
         Assigns an already created environment to the referenced wind farm. Parameters of the environment (e.g. temperature, pressure, wind regime etc.) can be assigned later.
         The environment would be callable via its unique name and the assigned variable by user. When using the unique Id, it should be prefixed witht he library name pywinda. See example.
@@ -364,6 +367,7 @@ class windfarm:
 
             # return toUserVariable #doesn't return any value, depricated
     def distances(self, assets=[]):#From this point there would be a global convention of naming the property which shares two turbines in a "from" to "to" convention. For example distanceWT1toWT2 means the distance from WT1 to WT2
+
         """
         Returns the data frame with all the distances between assets in the wind farm or between those given in the assets list.
 
@@ -405,6 +409,7 @@ class windfarm:
             print("To be done for a given set of turbines' unique names")
             return "Under development"
     def coordinates(self, assets=[]):
+
         """
         Returns the data frame with all assets' x and y coordinates if the assets list is empty, otherwise only for the given set of assets.
 
@@ -442,6 +447,7 @@ class windfarm:
             return "Under development"
 
 class SRT:
+
     """
         Creates single rotor turbine (SRT) object and returns it with the given unique name.
 
@@ -478,6 +484,7 @@ class SRT:
 
     @property
     def info(self):
+
         """
         Returns a data frame containing information about the wind turbine.
 
