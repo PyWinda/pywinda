@@ -21,3 +21,27 @@ def test_normal_dist():
            3.48484848  , 3.58585859  ,3.68686869  ,3.78787879  ,3.88888889 , 3.98989899,
            4.09090909  , 4.19191919  ,4.29292929  ,4.39393939  ,4.49494949 , 4.5959596 ,
            4.6969697   , 4.7979798   ,4.8989899   ,5.        ]]))==True
+
+def test_cdf_normal_1sigma():
+    cdf,x=dfm.cdf_normal(0,1,1)
+    cdf1,x=dfm.cdf_normal(0,1,-1)
+    check=max(cdf)-max(cdf1)
+    assert (check)==0.6826894921370856
+
+def test_cdf_normal_2sigma():
+    cdf,x=dfm.cdf_normal(0,1,2)
+    cdf1,x=dfm.cdf_normal(0,1,-2)
+    check=max(cdf)-max(cdf1)
+    assert (check)==0.9544997361036418
+
+def test_cdf_normal_3sigma():
+    cdf,x=dfm.cdf_normal(0,1,3)
+    cdf1,x=dfm.cdf_normal(0,1,-3)
+    check=max(cdf)-max(cdf1)
+    assert (check)==0.9973002039367398
+
+def test_cdf_normal_5sigma():
+    cdf,x=dfm.cdf_normal(0,1,5)
+    cdf1,x=dfm.cdf_normal(0,1,-5)
+    check=max(cdf)-max(cdf1)
+    assert (check)==0.9999994266968564

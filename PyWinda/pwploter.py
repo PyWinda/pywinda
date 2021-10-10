@@ -4,7 +4,6 @@ import numpy as np
 
 
 def plot(x,y,**plt_kwargs):
-
     fig,ax=plt.subplots(figsize=(10,8))
 
     if 'title' in plt_kwargs:
@@ -26,10 +25,19 @@ def plot(x,y,**plt_kwargs):
     resx=(max(x)-min(x))/len(x)*5
     resy=(max(y)-min(y))/len(y)*5
 
-    ax.set_xticks(np.arange(min(x),max(x)+resx,resx),)
+    xticks=[]
+    ytick=[]
+
+    for i in np.arange(min(x),max(x)+resx,resx):
+        xticks.append(round(i,6)) #create the xticks with 6 decimal places
+    for i in np.arange(min(y),max(y)+resy,resy):
+        ytick.append(round(i,6))  #create the ytick with 6 decimal places
+
+    ax.set_xticks(xticks)
     ax.set_xticklabels(ax.get_xticks(), rotation=60,fontname='Times New Roman')
-    ax.set_yticks(np.arange(min(y),max(y)+resy,resy))
-    ax.set_xticklabels(ax.get_xticks(),fontname='Times New Roman')
+
+    ax.set_yticks(ytick)
+    ax.set_yticklabels(ax.get_yticks(),fontname='Times New Roman')
     ax.grid(axis='both')
 
     return fig,ax
