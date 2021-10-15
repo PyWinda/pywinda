@@ -20,7 +20,7 @@ def number_of_simsulaions(standard_error_of_mean,confidence_level,standard_norma
 
 
 
-def normal_dist(mean,sd,num=1000,plot=False,seed=None,bins=100):
+def pdf_normal(mean,sd,num=1000,plot=False,seed=None,bins=100):
     """
         This function generates the normal (Gaussian) distribution, for a given mean value and standard deviation.
 
@@ -35,7 +35,7 @@ def normal_dist(mean,sd,num=1000,plot=False,seed=None,bins=100):
         :Example:
 
                     >>> from PyWinda import pywinda as pw
-                    >>> samples,pr,bins,fig=normal_dist(mean=20,sd=2,plot=True,seed=12)
+                    >>> samples,pr,bins,fig=pdf_normal(mean=20,sd=2,plot=True,seed=12)
                     >>> print(samples) #doctest:+ELLIPSIS
                     [19.98634644 22.09228658 21.48317684 21.44791308 ...]
                     >>> print(fig)
@@ -48,19 +48,18 @@ def normal_dist(mean,sd,num=1000,plot=False,seed=None,bins=100):
 
     rng=default_rng(seed) #the default random number generator
     y=rng.normal(loc=mean, scale=sd, size=num)
-    figure, ax, counts, bins_array = pwploter.hist(y, bins=bins, title="Normal Distribution", xlabel='Values [-]',
-                                                   ylabel='Probability [-]',
-                                                   text={'mean': mean, 'Standard deviation': sd,
-                                                         'Number of samples': num, 'Bins': bins})
+    counts1,bins_array1=np.histogram(y,bins=bins,density=True)
     if plot:
+        figure, ax, counts, bins_array = pwploter.hist(y,density=True, bins=bins, title="Normal Distribution", xlabel='Values [-]',
+                                                       ylabel='Probability [-]',
+                                                       text={'mean': mean, 'Standard deviation': sd,
+                                                             'Number of samples': num, 'Bins': bins})
         ax.plot(bins_array, 1 / (sd * np.sqrt(2 * np.pi)) *
              np.exp(- (bins_array - mean) ** 2 / (2 * sd ** 2)),
              linewidth=2, color=pred)
         return y,counts,bins_array, figure # returns samples counts in bins, bins array and the figure.
     else:
-        return y, counts, bins_array
-
-
+        return y, counts1, bins_array1
 def cdf_normal(mean,sd,x=None,num=1000,plot=False,seed=None,bins=100):
     """
         This function generates the cumulative distribution function of the normal distributin function with the given parameters.
@@ -132,6 +131,48 @@ def cdf_normal(mean,sd,x=None,num=1000,plot=False,seed=None,bins=100):
         raise Exception ("Out of range, please make sure that the point of interest x is with the range of -+5 times the standard deviation.")
 
 
+def pdf_triangular(low,mode,high,num=1000,plot=False,seed=None,bins=100):
+    """
+            This function generates the triangular probabiliyt density function, for a given low, mode and high values.
+
+            :param low: [*req*] the lowest number in triangular distribution.
+            :param mode: [*req*]  the mode of the triangular distribution.
+            :param high: [*req*] the highest number in triangular distribution.
+            :param num: [*optional*] number of samples, by default 1000.
+            :param plot: [*optional*] if True a figure will also be returned.
+            :param seed: [*optional*] use the same seed number to produce the same distribution.
+            :param bins: [*optional*] number of bins to divide the number of samples to. Default value is 100.
+            :return s,counts,bins, fig: s is the 1D-array of generated samples, counts is the 1D-array of corresponding probability values to different bins, bins is the 1D-array of bins edges, and fig is to retrieve generated figure, only if plot is set to True.
+
+            :Example:
+
+                        >>> from PyWinda import pywinda as pw
+                        >>> samples,pr,bins,fig=pdf_triangular(low=1.9,mode=2,high=2.1,plot=True,seed=12)
+                        >>> print(samples) #doctest:+ELLIPSIS
+                        [1.97082718 2.06736656 1.96153379 ...]
+                        >>> print(fig)
+                        Figure(1000x800)
+
+
+            \\----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    """
+    rng=default_rng(seed)
+    samples=rng.triangular(low,mode,high,size=num)
+    counts,bins_array=np.histogram(samples,bins=bins,density=True)
+    if plot:
+        figure, ax, counts_plot, bins_array_plot = pwploter.hist(samples, bins=bins, title="Triangular Distribution",
+                                                       xlabel='Values [-]',
+                                                       ylabel='Probability [-]',
+                                                       text={'Lowest value': low, 'Mode': mode, 'Highes value': high,
+                                                             'Number of samples': num, 'Bins': bins})
+        # ax.plot(bins_array, 1 / (sd * np.sqrt(2 * np.pi)) *
+        #         np.exp(- (bins_array - mean) ** 2 / (2 * sd ** 2)),
+        #         linewidth=2, color=pred)
+        return samples, counts_plot, bins_array_plot, figure  # returns samples counts in bins, bins array and the figure.
+    else:
+        return samples, counts, bins_array
+
 
 
 
@@ -142,6 +183,7 @@ def cdf_normal(mean,sd,x=None,num=1000,plot=False,seed=None,bins=100):
 
 ###################################
 #####The drafts section ###########
-
+samples=pdf_triangular(2,3,4,plot=True)[3]
+plt.show()
 #######The drafts section ends here###########
 ##############################################

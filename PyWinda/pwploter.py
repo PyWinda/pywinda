@@ -73,5 +73,5 @@ def hist(x,bins,density=True,**plt_kwargs):
         props = dict(boxstyle='round', facecolor=pgreen1, alpha=0.6,edgecolor=pgreen1)
         ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=12,verticalalignment='top', bbox=props,fontname='Times New Roman')
 
-    counts,bins2,ignored=ax.hist(x,bins,density=density,edgecolor='white')
+    counts,bins2,ignored=ax.hist(x,bins,density=density,edgecolor='white',linewidth=0.1)
     return fig,ax,counts,bins2
