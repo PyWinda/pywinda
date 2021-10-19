@@ -366,10 +366,19 @@ def cdf_weibull(shape,x=None,num=1000,plot=False,seed=None,bins=100):
         raise Exception ("Out of range, please make sure that the point of interest x is with the range.")
 
 
-def monte_carlo(performance_Func,condition=None,report=False):
+def monte_carlo(performance_Func,condition=None,report=False,plot=False):
     start=perf_counter_ns()
     result=performance_Func
     number_of_samples = len(result)
+    if plot==True:
+        figure, ax, counts, bins_array = pwploter.hist(result, density=True, bins=100, title="Simulation Results",
+                                                       xlabel='Values [-]',
+                                                       ylabel='Probability [-]',
+                                                       text={'number of simulations': number_of_samples})
+        # ax.plot(bins_array, 1 / (sd * np.sqrt(2 * np.pi)) *
+        #      np.exp(- (bins_array - mean) ** 2 / (2 * sd ** 2)),
+        #      linewidth=2, color=pred)
+        # return y,counts,bins_array, figure # returns samples counts in bins, bins array and the figure.
 
     if condition != None:
         lower = []
@@ -384,10 +393,8 @@ def monte_carlo(performance_Func,condition=None,report=False):
 
     percentage_over=number_of_higher / number_of_samples * 100
     percentage_belwo=number_of_lower / number_of_samples * 100
-
-
     end = perf_counter_ns()
-    duration=(end-start)/1000000
+    duration=(end-start)/1000000 #convert the duration to milli seconds.
     reports_Dic={'Property':['Duration of Monte Carlo Simulation in ms','Percentage over '+ str(condition),'Percentage below '+ str(condition), 'Number of Simulations', 'mean value','Standard deviation','Variance'],
                  'Value':[duration,percentage_over,percentage_belwo,number_of_samples,result.mean(),result.std(),result.var()]}
     report_dataframe=pd.DataFrame(reports_Dic)
@@ -399,15 +406,19 @@ def monte_carlo(performance_Func,condition=None,report=False):
 
 ###################################
 # #####The drafts section ###########
-def performance(a,b,f):
-    p=f/(a*b)
-    # time.sleep(11)
-    return p
-
-a=pdf_triangular(0.019,0.02,0.021,num=10000)[0]
-b=pdf_triangular(0.0285,0.03,0.0315,num=10000)[0]
-f=11300*pdf_weibull(2.5,num=10000)[0]
-
-monte_carlo(performance(a,b,f),30000000)
-#######The drafts section ends here###########
+#
+# def performance(a,b,f):
+#     #Performance= power-loss-load
+#     power=0.5*A*rhoa*cp*v**3
+#     loss= 0.14*NumberofTurbines*power
+#     # time.sleep(11)
+#     return p
+#
+# a=pdf_triangular(0.019,0.02,0.021,num=10000)[0]
+# b=pdf_triangular(0.0285,0.03,0.0315,num=10000)[0]
+# f=11300*pdf_weibull(2.5,num=10000)[0]
+#
+# monte_carlo(performance(a,b,f),30000000,plot=True)
+# plt.show()
+# #######The drafts section ends here###########
 ##############################################

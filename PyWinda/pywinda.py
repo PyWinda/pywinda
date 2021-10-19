@@ -213,7 +213,8 @@ class windfarm:
 
         :Example:
 
-            >>> curslack=windfarm("uID_Curslack")
+            >>> from PyWinda import pywinda as pw
+            >>> curslack=pw.windfarm("uID_Curslack")
             >>> WT1=curslack.addTurbine('uID_WT1',turbineType='SRT',hubHeigt=120, x_horizontal=100,y_vertical=100)
             >>> WT2=curslack.addTurbine('uID_WT2',turbineType='SRT',hubHeigt=120, x_horizontal=150,y_vertical=150)
             >>> WT3=curslack.addTurbine('uID_MWT3',turbineType='MRT',hubHeigt=200, x_horizontal=300,y_vertical=300)
@@ -244,7 +245,8 @@ class windfarm:
 
         :Example:
 
-            >>> curslack=windfarm("uID_Curslack2")
+            >>> from PyWinda import pywinda as pw
+            >>> curslack=pw.windfarm("uID_Curslack2")
             >>> WT1=curslack.addTurbine('uID_WT11',turbineType='SRT',hubHeigt=120)
             >>> WT2=curslack.addTurbine('uID_WT12',turbineType='SRT',hubHeigt=120)
             >>> WT3=curslack.addTurbine('uID_MWT13',turbineType='MRT',hubHeigt=200)
@@ -257,9 +259,134 @@ class windfarm:
         self.allassets=self.createdSRTs+self.createdMRTs#keeps the record of all assets in the wind farm
         return self.allassets
 
+    def addRefTurbine(self, uniqueID, reference='NREL'):  ##This function helps to create a reference wind turbine and keep internal (inside the class) track of its name. It is not a deep copy, rather a reference.
+
+        """
+        By default adds a single rotor turbine (SRT) to the related windfarm. Returns the created wind turbine with the given unique ID.
+        The wind turbine would be callable via its unique name and via the assigned variable by user. Note that the referenced unique id is stored in library. Thus when calling the turbine via unique id, it should be prefixed by library name pywinda. See example below.
+
+        :param uniqueID: [*req*] Unique ID of the wind turbine as string
+        :param turbineType: [*opt*] Type of turbine as string: 'SRT' or 'MRT'
 
 
-    def addTurbine(self,uniqueID,turbineType="SRT",diameter=float("NaN"),hubHeigt=float("NaN"),x_horizontal=float("NaN"),y_vertical=float("NaN")): ##This function helps to create a wind turbine and keep internal (inside the class) track of its name. It is not a deep copy, rather a reference.
+        :Example:
+
+            >>> from PyWinda import pywinda as pw
+
+
+
+
+        \-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        """
+
+        if uniqueID in self.createdSRTs:  # Checks if the given unique Id already exists in the wind farm
+            raise Exception("A wind turbine with the same unique ID in wind farm [", str(self.uID),
+                            "] already exists. New turbine not added.")
+        else:
+            if type(uniqueID) == str and len(uniqueID.split()) == 1:
+                if uniqueID in globals().keys():  # Checks if the given unique Id is not in conflict with user's already assigned variables.
+                    raise Exception("A wind turbine witht the same uniqe ID globally exists. New turbine not added.")
+                else:
+
+                    if reference == "NREL":
+                        NRELPower = [
+                            0.19800,
+                            0.31300,
+                            0.37712,
+                            0.41525,
+                            0.44068,
+                            0.45700,
+                            0.46716,
+                            0.47458,
+                            0.47775,
+                            0.47775,
+                            0.47775,
+                            0.47775,
+                            0.47775,
+                            0.47775,
+                            0.47564,
+                            0.47564,
+                            0.47246,
+                            0.46822,
+                            0.45551,
+                            0.40148,
+                            0.35487,
+                            0.31568,
+                            0.28178,
+                            0.25318,
+                            0.22775,
+                            0.20551,
+                            0.18538,
+                            0.16949,
+                            0.15466,
+                            0.14089,
+                            0.12924,
+                            0.11864,
+                            0.10911,
+                            0.10064,
+                            0.09322,
+                            0.08686,
+
+                        ]
+                        ws = [3.0,
+                              3.5,
+                              4.0,
+                              4.5,
+                              5.0,
+                              5.5,
+                              6.0,
+                              6.5,
+                              7.0,
+                              7.5,
+                              8.0,
+                              8.5,
+                              9.0,
+                              9.5,
+                              10.0,
+                              10.5,
+                              11.0,
+                              11.4,
+                              11.5,
+                              12.0,
+                              12.5,
+                              13.0,
+                              13.5,
+                              14.0,
+                              14.5,
+                              15.0,
+                              15.5,
+                              16.0,
+                              16.5,
+                              17.0,
+                              17.5,
+                              18.0,
+                              18.5,
+                              19.0,
+                              19.5,
+                              20.0,
+
+                              ]
+                        globals()[uniqueID] = toUserVariable = SRT(uniqueID, diameter=120, hubHeigt=120,
+                                                                   ws=ws,
+                                                                   cp=NRELPower)  # windfarm class is dynamicall created and referenced with the unique ID to the users assigned variable.
+                        self.__numOfSRT += 1
+                        self.createdSRTs.append(uniqueID)
+                    elif reference == "DTU":
+                        globals()[uniqueID] = toUserVariable = SRT(uniqueID, diameter=150, hubHeigt=150,
+                                                                  )  # windfarm class is dynamicall created and referenced with the unique ID to the users assigned variable.
+                        self.__numOfSRT += 1
+                        self.createdSRTs.append(uniqueID)
+                    else:
+                        raise Exception("Turbine type not supported")
+
+            else:
+                raise Exception(
+                    "Name should be a string without spaces. The assignment should be done via the UID and not the variable name.")
+
+            return toUserVariable
+
+    def addTurbine(self,uniqueID,turbineType="SRT",diameter=float("NaN"),hubHeigt=float("NaN"),x_horizontal=float("NaN"),y_vertical=float("NaN"),ws=[],cp=[]): ##This function helps to create a wind turbine and keep internal (inside the class) track of its name. It is not a deep copy, rather a reference.
 
         """
         By default adds a single rotor turbine (SRT) to the related windfarm. Returns the created wind turbine with the given unique ID.
@@ -305,20 +432,22 @@ class windfarm:
                     raise  Exception("A wind turbine witht the same uniqe ID globally exists. New turbine not added.")
                 else:
                     if turbineType=="SRT":
-                        globals()[uniqueID] = toUserVariable = SRT(uniqueID,diameter=diameter,hubHeigt=hubHeigt,x_horizontal=x_horizontal,y_vertical=y_vertical)  # windfarm class is dynamicall created and referenced with the unique ID to the users assigned variable.
+                        globals()[uniqueID] = toUserVariable = SRT(uniqueID,diameter=diameter,hubHeigt=hubHeigt,x_horizontal=x_horizontal,y_vertical=y_vertical,ws=ws,cp=cp)  # windfarm class is dynamicall created and referenced with the unique ID to the users assigned variable.
                         self.__numOfSRT += 1
                         self.createdSRTs.append(uniqueID)
                     elif turbineType=="MRT":
-                        globals()[uniqueID] = toUserVariable = MRT(uniqueID,diameter=diameter,hubHeigt=hubHeigt,x_horizontal=x_horizontal,y_vertical=y_vertical)  # windfarm class is dynamicall created and referenced with the unique ID to the users assigned variable.
+                        globals()[uniqueID] = toUserVariable = MRT(uniqueID,diameter=diameter,hubHeigt=hubHeigt,x_horizontal=x_horizontal,y_vertical=y_vertical,ws=ws,cp=cp)  # windfarm class is dynamicall created and referenced with the unique ID to the users assigned variable.
                         self.__numOfMRT += 1
                         self.createdMRTs.append(uniqueID)
                     else:
                         raise  Exception ("Turbine type not supported")
 
             else:
-                    raise Exception ("Name should be a string without spaces.")
+                    raise Exception ("Name should be a string without spaces. The assignment should be done via the UID and not the variable name.")
 
             return toUserVariable
+
+
     def assignEnvironment(self,envName):
 
         """
@@ -364,7 +493,7 @@ class windfarm:
 
 
             else:
-                    raise Exception ("Name should be a string without spaces.")
+                    raise Exception ("Name should be a string without spaces. The assignment should be done via the UID and not the variable name.")
 
             # return toUserVariable #doesn't return any value, depricated
     def distances(self, assets=[]):#From this point there would be a global convention of naming the property which shares two turbines in a "from" to "to" convention. For example distanceWT1toWT2 means the distance from WT1 to WT2
@@ -376,7 +505,8 @@ class windfarm:
 
         :Example:
 
-            >>> Curslack = windfarm("Curslack_farm")
+            >>> from PyWinda import pywinda as pw
+            >>> Curslack = pw.windfarm("Curslack_farm")
             >>> WT1 = Curslack.addTurbine("C_WT1", x_horizontal=480331, y_vertical=4925387)
             >>> WT2 = Curslack.addTurbine("C_WT2", x_horizontal=480592, y_vertical=4925253)
             >>> WT3 = Curslack.addTurbine("C_WT3", x_horizontal=480886, y_vertical=4925166)
@@ -417,7 +547,8 @@ class windfarm:
 
         :Example:
 
-              >>> Curslack = windfarm("Curslack_farm")
+              >>> from PyWinda import pywinda as pw
+              >>> Curslack = pw.windfarm("Curslack_farm")
               >>> WT1 = Curslack.addTurbine("C_WT1", x_horizontal=480331, y_vertical=4925387)
               >>> WT2 = Curslack.addTurbine("C_WT2", x_horizontal=480592, y_vertical=4925253)
               >>> WT3 = Curslack.addTurbine("C_WT3", x_horizontal=480886, y_vertical=4925166)
@@ -471,9 +602,8 @@ class SRT:
         \-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
     """
-    created_SRTs=[]
-    def __init__(self,srtUniqueID,diameter=float("NaN"),hubHeigt=float("NaN"),x_horizontal=float("NaN"),y_vertical=float("NaN")):
-        SRT.created_SRTs.append(srtUniqueID)
+    def __init__(self,srtUniqueID,diameter=float("NaN"),hubHeigt=float("NaN"),x_horizontal=float("NaN"),y_vertical=float("NaN"),ws=[],cp=[]):
+        self.created_SRTs = []
         self.uID = srtUniqueID
         self.diameter=diameter
         self.hubHeight=hubHeigt
@@ -481,6 +611,30 @@ class SRT:
         self.y_vertical=y_vertical
         self.area=0.25*np.pi*self.diameter**2
         self.lifeTime=None
+
+        self.windspeeds=[i for i in np.arange(0,50.5,0.5)] #m/s
+        self.interp_cp=[]
+        if len(ws)==len(cp) and len(ws)!=0:
+            for index,i in enumerate(self.windspeeds):
+                self.interp_cp.append(np.interp(i, ws, cp, left=0, right=0))
+
+        elif len(ws)!=len(cp):
+            raise Exception ("The dimensions of windspeed and power coeficinet arrays should same.")
+
+
+        if srtUniqueID in self.created_SRTs: #Checks if the SRT ID is already taken
+            raise Exception ("The SRT unique ID [" + str(srtUniqueID) + "] is already taken.")
+        else:
+            if type(srtUniqueID) == str and len(srtUniqueID.split())==1:
+                if srtUniqueID in globals().keys(): #Checks if the given unique Id is not in conflict with user's already assigned variables.
+                    raise Exception ("Another object with the same uniqe ID globally exists. New SRT not created.")
+                else:
+                    globals()[srtUniqueID] = self    #SRT is dynamicall created and referenced with the unique ID to the users assigned variable.
+                    self.created_SRTs.append(srtUniqueID) #we append the created SRT to the list
+                    self.uID=srtUniqueID
+            else:
+                raise Exception("Unique ID should be a string without spaces.")
+
 
     @property
     def info(self):
