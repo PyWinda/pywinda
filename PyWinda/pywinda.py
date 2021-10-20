@@ -262,18 +262,28 @@ class windfarm:
     def addRefTurbine(self, uniqueID, reference='NREL'):  ##This function helps to create a reference wind turbine and keep internal (inside the class) track of its name. It is not a deep copy, rather a reference.
 
         """
-        By default adds a single rotor turbine (SRT) to the related windfarm. Returns the created wind turbine with the given unique ID.
+        By default adds a single rotor turbine (SRT) rference turbine to the related windfarm. Returns the created wind turbine with the given unique ID.
         The wind turbine would be callable via its unique name and via the assigned variable by user. Note that the referenced unique id is stored in library. Thus when calling the turbine via unique id, it should be prefixed by library name pywinda. See example below.
 
         :param uniqueID: [*req*] Unique ID of the wind turbine as string
-        :param turbineType: [*opt*] Type of turbine as string: 'SRT' or 'MRT'
+        :param reference: [*opt*] Choose among 'NREL-5MW' or 'DTU-10MW' reference turbines
 
 
         :Example:
 
             >>> from PyWinda import pywinda as pw
-
-
+            >>> DanTysk=pw.windfarm('DanTysk01')
+            >>> WT1=DanTysk.addRefTurbine('Turbine1',reference='NREL')
+            >>> print(pw.Turbine1.info)
+                   Property                                              Value
+            0   Unique Name                                           Turbine1
+            1  x_horizontal                                                NaN
+            2    y_vertical                                                NaN
+            3      Diameter                                                120
+            4    Hub height                                                120
+            5          Area                                       11309.733553
+            6    Windspeeds  [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, ...
+            7            CP  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.198, 0.313, 0...
 
 
         \-----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -416,7 +426,7 @@ class windfarm:
             Exception: A wind turbine witht the same uniqe ID globally exists. New turbine not added.
             >>> WT5=curslack.addTurbine('uID WT16')
             Traceback (most recent call last):
-            Exception: Name should be a string without spaces.
+            Exception: Name should be a string without spaces. The assignment should be done via the UID and not the variable name.
 
 
 
@@ -459,8 +469,8 @@ class windfarm:
         :Example:
 
             >>> from PyWinda import pywinda as pw
-            >>> DanTysk=windfarm("DanTysk2")
-            >>> env=environment('normal1')
+            >>> DanTysk=pw.windfarm("DanTysk2")
+            >>> env=pw.environment('normal1')
             >>> print(env.info.keys()) #shows some of the conditions of the created environment
             dict_keys(['Wind directions', 'Wind speeds', 'Pressure', 'Temperature'])
             >>> print(env.info['Pressure'])
@@ -506,17 +516,17 @@ class windfarm:
         :Example:
 
             >>> from PyWinda import pywinda as pw
-            >>> Curslack = pw.windfarm("Curslack_farm")
-            >>> WT1 = Curslack.addTurbine("C_WT1", x_horizontal=480331, y_vertical=4925387)
-            >>> WT2 = Curslack.addTurbine("C_WT2", x_horizontal=480592, y_vertical=4925253)
-            >>> WT3 = Curslack.addTurbine("C_WT3", x_horizontal=480886, y_vertical=4925166)
-            >>> WT4 = Curslack.addTurbine("C_MWT4",x_horizontal=480573, y_vertical=4925712)
-            >>> print(Curslack.distances())
-               Assets       C_WT1       C_WT2       C_WT3      C_MWT4
-            0   C_WT1    0.000000  293.388821  597.382624  405.202419
-            1   C_WT2  293.388821    0.000000  306.602348  459.393078
-            2   C_WT3  597.382624  306.602348    0.000000  629.352842
-            3  C_MWT4  405.202419  459.393078  629.352842    0.000000
+            >>> Curslack2 = pw.windfarm("Curslack_farm1")
+            >>> WT1 = Curslack2.addTurbine("C_WT01", x_horizontal=480331, y_vertical=4925387)
+            >>> WT2 = Curslack2.addTurbine("C_WT02", x_horizontal=480592, y_vertical=4925253)
+            >>> WT3 = Curslack2.addTurbine("C_WT03", x_horizontal=480886, y_vertical=4925166)
+            >>> WT4 = Curslack2.addTurbine("C_MWT04",x_horizontal=480573, y_vertical=4925712)
+            >>> print(Curslack2.distances())
+                Assets      C_WT01      C_WT02      C_WT03     C_MWT04
+            0   C_WT01    0.000000  293.388821  597.382624  405.202419
+            1   C_WT02  293.388821    0.000000  306.602348  459.393078
+            2   C_WT03  597.382624  306.602348    0.000000  629.352842
+            3  C_MWT04  405.202419  459.393078  629.352842    0.000000
 
         \-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -554,12 +564,11 @@ class windfarm:
               >>> WT3 = Curslack.addTurbine("C_WT3", x_horizontal=480886, y_vertical=4925166)
               >>> WT4 = Curslack.addTurbine("C_MWT4",x_horizontal=480573, y_vertical=4925712)
               >>> print(Curslack.coordinates())
-                    Assets  x_coor   y_coor
-                    C_WT1   480331  4925387
-                    C_WT2   480592  4925253
-                    C_WT3   480886  4925166
-                    C_MWT4  480573  4925712
-                    C_MWT5  480843  4925592
+              Assets  x_coor   y_coor
+              C_WT1   480331  4925387
+              C_WT2   480592  4925253
+              C_WT3   480886  4925166
+              C_MWT4  480573  4925712
 
         \-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -662,7 +671,7 @@ class SRT:
 
         """
 
-        infoDic={"Property":["Unique Name","x_horizontal","y_vertical", "Diameter", "Area"],"Value":[self.uID,self.x_horizontal,self.y_vertical, self.diameter, self.area]}
+        infoDic={"Property":["Unique Name","x_horizontal","y_vertical", "Diameter", 'Hub height',"Area",'Windspeeds','CP'],"Value":[self.uID,self.x_horizontal,self.y_vertical, self.diameter, self.hubHeight,self.area,self.windspeeds,self.interp_cp]}
         return pd.DataFrame(infoDic)
 
 class MRT(SRT):
