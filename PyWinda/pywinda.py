@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from numpy.random import default_rng
 #///////////////////// miscellaneous functions starts here
 def cAngle(i):
    x=i % 360
@@ -411,7 +412,7 @@ class windfarm:
                               20.0,
 
                               ]
-                        globals()[uniqueID] = toUserVariable = SRT(uniqueID, diameter=120, hubHeigt=120,
+                        globals()[uniqueID] = toUserVariable = SRT(uniqueID, diameter=126, hubHeigt=120,
                                                                    ws=ws,
                                                                    cp=NRELPower)  # windfarm class is dynamicall created and referenced with the unique ID to the users assigned variable.
                         self.__numOfSRT += 1
@@ -621,16 +622,15 @@ class windfarm:
             print("To be done for a given set of turbines' unique names")
             return "Under development"
 
-    def run(self,wakeModel=None):
+    def run(self,wakeModel=None,randomWind=None):
         AEP = 0
         RunReport = {}
-
         if self.farmEnvironment==None:
             raise Exception ('The windfarm has no uniqe environment associated with it.')
         if len(self.assets)==0:
             raise Exception ('The wind farm has no turbine assigned to it.')
         else:
-            if wakeModel==None: #no information about the wake effects are considered thus calculating power without need of infomration about the turbine locations
+            if wakeModel==None and randomWind==None: #no information about the wake effects are considered thus calculating power without need of infomration about the turbine locations
                 unique_env=globals()[self.farmEnvironment].info #the environemtn of the wind farm, running the info function here updates the list of all assets as well.
                 if unique_env["Sectors"]!=None: #checks if the sectors are created
                     if len(unique_env["Sectors"])==len(unique_env["Wind probability"])==len(unique_env["Scale parameter of wind distribution"])==len(unique_env["Shape parameter of wind distribution"]): #checks if the wind conditions are declared correctly
@@ -694,10 +694,81 @@ class windfarm:
                         raise Exception ('The dimentions of wind conditions array does not match that of the introduced sectors')
                 else:
                     raise Exception('The environment sectors are not declared. Use the function makeSectors() to implement the PyWinda default sectors definition.')
+
+            if wakeModel==None and randomWind!=None: #no information about the wake effects are considered thus calculating power without need of infomration about the turbine locations
+                rtg=default_rng()
+                unique_env=globals()[self.farmEnvironment].info #the environemtn of the wind farm, running the info function here updates the list of all assets as well.
+                bins_plan = [0] #0 is added from the begining to the bins
+                for wsp in unique_env['Wind speeds']:
+                    bins_plan.append(wsp + 0.25)
+                bins_plan[-1] = unique_env['Wind speeds'][-1] #end of the bins_plan array is replaced back with the end of the possible wind speeds, size of the bins_plan is one more than the wind speeds
+                if unique_env["Sectors"]!=None: #checks if the sectors are created
+                    if len(unique_env["Sectors"])==len(unique_env["Wind probability"])==len(unique_env["Scale parameter of wind distribution"])==len(unique_env["Shape parameter of wind distribution"]): #checks if the wind conditions are declared correctly
+                        for index,turbine in enumerate(self.allassets): #loops through all the available assets specifically only the SRTs and MRTs, pywinda currently doesn't support other assets like platforms and metmasts
+                            statistics_dictionary = {}
+                            sectors = []
+                            directions = []
+                            probab_any_wind = [] #defined foe each secotr
+                            probab_specific_wind = []  #defined for every degree
+                            total_probab = []
+                            windspeeds = []
+                            time_fraction = []
+                            cp = []
+                            energy = []
+                            for ind,sectorname in enumerate(unique_env["Sectors"]):  # this all the sectors
+                                probability_per_unit=unique_env["Wind probability"][ind]/len(unique_env["Sectors"][sectorname]) #divides further the probability assigned for one sector to all the degrees inside a sector.
+                                afactor_persector=unique_env["Scale parameter of wind distribution"][ind]
+                                kfactor_persector=unique_env["Shape parameter of wind distribution"][ind]
+                                randomWinds=afactor_persector*rtg.weibull(kfactor_persector,randomWind) #creates the sample wind with a lot of numbers
+                                all_probabilities,bins_ignored=np.histogram(randomWinds,bins=bins_plan,density=True)#splites the produced winds
+                                all_probabilities=all_probabilities*0.5 #the probability density fucntion has a width of only 0.5 thus the area under one bar is calcualted here
+                                # print(np.sum(all_probabilities))
+                                # print()
+                                for index,unit in enumerate(unique_env["Sectors"][sectorname]):
+                                    for indexx,windspeed in enumerate(unique_env['Wind speeds']):
+                                        sectors.append(sectorname)
+                                        directions.append(unit) #unit is actually the degrees
+                                        probab_any_wind.append(probability_per_unit)
+                                        if indexx==0:
+                                            probabperws = all_probabilities[indexx]
+                                            probab_specific_wind.append(probabperws)
+                                        else:
+                                            probabperws = all_probabilities[indexx]
+                                            probab_specific_wind.append(probabperws)
+                                        total_probab_here = probability_per_unit*probabperws
+                                        total_probab.append(total_probab_here)
+                                        windspeeds.append(windspeed)
+                                        time_fraction.append(total_probab_here*365*24*3600)
+                                        cpLoop=globals()[str(turbine)].interp_cp[indexx]
+                                        cp.append(cpLoop)
+                                        energy.append(0.5*globals()[str(self.farmEnvironment)].info["Air Density [kg/m^3]"]*globals()[str(turbine)].area*windspeed**3*cpLoop*365*24*total_probab_here)
+
+                            statistics_dictionary['Sectors'] = sectors
+                            statistics_dictionary['Directions[degrees]']=directions
+                            statistics_dictionary['Probability_of_any_windspeed']=probab_any_wind
+                            statistics_dictionary['Probability_of_specific_windspeed']=probab_specific_wind
+                            statistics_dictionary['Total_probability']=total_probab
+                            statistics_dictionary['Wind_speeds[m/s]']=windspeeds
+                            statistics_dictionary['Time_fraction[s]']=time_fraction
+                            statistics_dictionary['CP']=cp
+                            statistics_dictionary['Produced_energy[Wh]']=energy
+                            # print(np.sum(total_probab))
+
+                            final_statistics = pd.DataFrame(statistics_dictionary)
+                            RunReport[str(turbine)+'_statistics']=final_statistics
+                            RunReport[str(turbine)+'_AEP[MWh]']=np.sum([energy])/1000000 #total AEP in MWh
+                            AEP=AEP+np.sum([energy])/1000000
+                        RunReport['Windfarm_AEP[MWh]']=AEP
+                        return RunReport
+
+                    else:
+                        raise Exception ('The dimentions of wind conditions array does not match that of the introduced sectors')
+                else:
+                    raise Exception('The environment sectors are not declared. Use the function makeSectors() to implement the PyWinda default sectors definition.')
+
             elif wakeModel=='Larsen':
                 if self.__allDistances.empty:
                     self.__allDistances=self.distances() # checks if the allDistances data frame is already populated
-        return AEP
 class SRT:
 
     """
@@ -807,15 +878,17 @@ if __name__=='__main__':
     cur.addRefTurbine('WT2')
     cur.addRefTurbine('WT3')
 
-
+#---------------
     cur_env=environment('normal1')
-
+    cur_env.makeSectors(n=12,sectorNames=[f'sector{i}' for i in range(12)])
+    cur_env.windConditions(windProbability=[1/12 for i in range(12)],aParams=[5 for i in range(12)],kParams=[2.5 for i in range(12)])
+#-----------
     cur.assignEnvironment('normal1')
-    cur_env.makeSectors()
-    cur_env.windConditions()
-    report=cur.run()
-    print(report['WT1_AEP[MWh]'])
-    print(report['Windfarm_AEP[MWh]'])
+
+    for i in range(100):
+        report = cur.run(randomWind=1000)['WT1_AEP[MWh]']
+        print(report)
+    # print(report['Windfarm_AEP[MWh]'])
 
     # print(cur.lifetime)
 
