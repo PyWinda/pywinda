@@ -1,7 +1,7 @@
 import pandas as pd
 
-import pwploter #only for documentation
-# from PyWinda import pwploter # for default and for pypi
+# import pwploter #only for documentation
+from PyWinda import pwploter # for default and for pypi
 import numpy as np
 from numpy.random import default_rng
 from time import perf_counter_ns
@@ -408,16 +408,16 @@ def monte_carlo(performance_Func,condition=None,report=False,plot=False):
 ###################################
 # #####The drafts section ###########
 #
-def performance(a,b,f):
-
-    p=f/a/b
-    return p
+# def performance(a,b,f):
 #
-a=pdf_triangular(0.019,0.02,0.021,num=10000)[0]
-b=pdf_triangular(0.0285,0.03,0.0315,num=10000)[0]
-f=11300*pdf_weibull(2.5,num=10000)[0]
-
-monte_carlo(performance(a,b,f),30000000,plot=True)
+#     p=f/a/b
+#     return p
+# #
+# a=pdf_triangular(0.019,0.02,0.021,num=10000)[0]
+# b=pdf_triangular(0.0285,0.03,0.0315,num=10000)[0]
+# f=11300*pdf_weibull(2.5,num=10000)[0]
+#
+# monte_carlo(performance(a,b,f),30000000,plot=True)
 # plt.show()
 # #######The drafts section ends here###########
 ##############################################
