@@ -1,7 +1,7 @@
 import pandas as pd
 
-# import pwploter #only for documentation
-from PyWinda import pwploter # for default and for pypi
+import pwploter #only for documentation
+# from PyWinda import pwploter # for default and for pypi
 import numpy as np
 from numpy.random import default_rng
 from time import perf_counter_ns
