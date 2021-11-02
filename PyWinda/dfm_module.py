@@ -256,7 +256,7 @@ def cdf_triangular(low,mode,high,x=None,num=1000,plot=False,seed=None,bins=100):
         raise Exception ("Out of range, please make sure that the point of interest x is with the range.")
 
 
-def pdf_weibull(shape,num=1000,plot=False,seed=None,bins=100):
+def pdf_weibull(shape,scale=1,num=1000,plot=False,seed=None,bins=100):
     """
             This function generates the Weibull probabiliyt density function, for a given shape factor.
 
@@ -281,7 +281,7 @@ def pdf_weibull(shape,num=1000,plot=False,seed=None,bins=100):
 
     """
     rng=default_rng(seed)
-    samples=rng.weibull(shape,size=num)
+    samples=scale*rng.weibull(shape,size=num)
     counts,bins_array=np.histogram(samples,bins=bins,density=True)
 
     def weib(x, n, a):
@@ -292,9 +292,9 @@ def pdf_weibull(shape,num=1000,plot=False,seed=None,bins=100):
                                                        ylabel='Probability [-]',
                                                        text={'Shape': shape,
                                                              'Number of samples': num, 'Bins': bins})
-        scale = counts_plot.max()/weib(bins_array_plot,1,a=shape).max()
+        # skale = counts_plot.max()/weib(bins_array_plot,n=scale,a=shape).max()
 
-        ax.plot(bins_array_plot, weib(bins_array_plot,n=1,a=shape)*scale,linewidth=2, color=pred) #TODO check the validity of the equation and add references
+        ax.plot(bins_array_plot, weib(bins_array_plot,n=scale,a=shape),linewidth=2, color=pred) #TODO check the validity of the equation and add references
         return samples, counts_plot, bins_array_plot, figure  # returns samples counts in bins, bins array and the figure.
     else:
         return samples, counts, bins_array
@@ -404,20 +404,20 @@ def monte_carlo(performance_Func,condition=None,report=False,plot=False):
 
 
 
-
-###################################
-# #####The drafts section ###########
-#
-# def performance(a,b,f):
-#
-#     p=f/a/b
-#     return p
-# #
-# a=pdf_triangular(0.019,0.02,0.021,num=10000)[0]
-# b=pdf_triangular(0.0285,0.03,0.0315,num=10000)[0]
-# f=11300*pdf_weibull(2.5,num=10000)[0]
-#
-# monte_carlo(performance(a,b,f),30000000,plot=True)
-# plt.show()
-# #######The drafts section ends here###########
-##############################################
+if __name__=='__main__':
+    ###################################
+    # #####The drafts section ###########
+    #
+    # def performance(a,b,f):
+    #
+    #     p=f/a/b
+    #     return p
+    # #
+    # a=pdf_triangular(0.019,0.02,0.021,num=10000)[0]
+    # b=pdf_triangular(0.0285,0.03,0.0315,num=10000)[0]
+    f=11300*pdf_weibull(2.5,scale=11300,num=1000000,plot=True)[0]
+    #
+    # monte_carlo(performance(a,b,f),30000000,plot=True)
+    plt.show()
+    # #######The drafts section ends here###########
+    ##############################################
