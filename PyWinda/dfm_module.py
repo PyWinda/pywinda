@@ -119,7 +119,7 @@ def cdf_normal(mean,sd,x=None,num=1000,plot=False,seed=None,bins=100):
         elif plot==False:
             return portion_of_y,cumSum,bin_edges  #returns y and x if not plot is done
     elif x==None and plot==True:
-        figure, ax = pwploter.plot(bin_edges[:-1], cumSum, title="Normal Distribution", xlabel='Values [-]',
+        figure, ax = pwploter.plot(bin_edges[1:], cumSum, title="Normal Distribution", xlabel='Values [-]',
                                    ylabel='Probability [-]',
                                    text={'mean': mean, 'Standard deviation': sd, 'Number of samples': num,
                                          'Bins': bins})
@@ -245,7 +245,7 @@ def cdf_triangular(low,mode,high,x=None,num=1000,plot=False,seed=None,bins=100):
         elif plot==False:
             return portion_of_y,cumSum,bin_edges  #returns y and x if not plot is done
     elif x==None and plot==True:
-        figure, ax = pwploter.plot(bin_edges[:-1], cumSum, title="Triangular CDF", xlabel='Values [-]',
+        figure, ax = pwploter.plot(bin_edges[1:], cumSum, title="Triangular CDF", xlabel='Values [-]',
                                    ylabel='Probability [-]',
                                    text={'Low': low, 'Mode': mode,'High': high ,'Number of samples': num,
                                          'Bins': bins})
@@ -298,7 +298,7 @@ def pdf_weibull(shape,scale=1,num=1000,plot=False,seed=None,bins=100):
         return samples, counts_plot, bins_array_plot, figure  # returns samples counts in bins, bins array and the figure.
     else:
         return samples, counts, bins_array
-def cdf_weibull(shape,x=None,num=1000,plot=False,seed=None,bins=100):
+def cdf_weibull(shape,scale=1,x=None,num=1000,plot=False,seed=None,bins=100):
     """
         This function generates the cumulative distribution function of the weibull distributin function with the given parameters.
 
@@ -323,7 +323,7 @@ def cdf_weibull(shape,x=None,num=1000,plot=False,seed=None,bins=100):
 
     """
     rng = default_rng(seed)  # the default random number generator
-    y = rng.weibull(shape, size=num)
+    y = scale*rng.weibull(shape, size=num)
     hist, bin_edges = np.histogram(y, bins=bins, density=True) #outputs all the number of samples in every bin in density form.
     dx = bin_edges[-1] - bin_edges[-2] #dx is constant always
     cumSum = np.cumsum(hist)
@@ -355,7 +355,7 @@ def cdf_weibull(shape,x=None,num=1000,plot=False,seed=None,bins=100):
         elif plot==False:
             return portion_of_y,cumSum,bin_edges  #returns y and x if not plot is done
     elif x==None and plot==True:
-        figure, ax = pwploter.plot(bin_edges[:-1], cumSum, title="Weibull CDF", xlabel='Values [-]',
+        figure, ax = pwploter.plot(bin_edges[1:], cumSum, title="Weibull CDF", xlabel='Values [-]',
                                    ylabel='Probability [-]',
                                    text={'Shape':shape,'Number of samples': num,
                                          'Bins': bins})
@@ -370,6 +370,23 @@ def monte_carlo(performance_Func,condition=None,report=False,plot=False):
     start=perf_counter_ns()
     result=performance_Func
     number_of_samples = len(result)
+    histValues,bin_edges=np.histogram(result,density=True,bins=number_of_samples)
+    dx=bin_edges[-1]-bin_edges[-2]
+
+    product=histValues*dx
+    a=0
+    cumSum=[]
+    for i in product:
+        a=a+i
+        cumSum.append(a)
+    print(cumSum)
+    # plt.plot(bin_edges[1:],cumSum)
+    # plt.show()
+    P90=np.interp(0.1,cumSum,bin_edges[1:],left=None,right=None)  #P90 means 90% of the estimates exceed the P90 estimate. The Cumulative sum of 10% at x, tells us that the 10% of the values are x or less than x, meaning 90 of the rest is greater than x. P90 is here x.
+    P75=np.interp(0.25,cumSum,bin_edges[1:],left=None,right=None)
+    P50=np.interp(0.5,cumSum,bin_edges[1:],left=None,right=None)
+
+    # print(hadaf)
     percentage_over='No conditions given'
     percentage_belwo='No conditions given'
     if plot==True:
@@ -394,30 +411,34 @@ def monte_carlo(performance_Func,condition=None,report=False,plot=False):
         number_of_higher = len(higher)
         percentage_over=number_of_higher / number_of_samples * 100
         percentage_belwo=number_of_lower / number_of_samples * 100
+
+
+
     end = perf_counter_ns()
     duration=(end-start)/1000000 #convert the duration to milli seconds.
-    reports_Dic={'Property':['Duration of Monte Carlo Simulation','Percentage over '+ str(condition),'Percentage below '+ str(condition), 'Number of Simulations', 'mean value','Standard deviation','Variance'],
-                 'Value':[f'{round(duration,2)} ms',f'{round(percentage_over,2):.2f} %',f'{round(percentage_belwo,2):.2f} %',number_of_samples,f'{round(result.mean(),3):.3f}',f'{round(result.std(),3):.3f}',f'{round(result.var(),3):.3f}']}
+    reports_Dic={'Property':['Duration of Monte Carlo Simulation','Percentage over '+ str(condition),'Percentage below '+ str(condition), 'Number of Simulations', 'mean value','Standard deviation','Variance', 'P90','P75','P50'],
+                 'Value':[f'{round(duration,2)} ms',f'{round(percentage_over,2):.2f} %',f'{round(percentage_belwo,2):.2f} %',number_of_samples,f'{round(result.mean(),3):.3f}',f'{round(result.std(),3):.3f}',f'{round(result.var(),3):.3f}',f'{round(P90,3):.3f}',f'{round(P75,3):.3f}',f'{round(P50,3):.3f}']}
     report_dataframe=pd.DataFrame(reports_Dic)
 
     print(report_dataframe)
 
 
-
-if __name__=='__main__':
-    ###################################
-    # #####The drafts section ###########
-    #
-    # def performance(a,b,f):
-    #
-    #     p=f/a/b
-    #     return p
-    # #
-    # a=pdf_triangular(0.019,0.02,0.021,num=10000)[0]
-    # b=pdf_triangular(0.0285,0.03,0.0315,num=10000)[0]
-    f=11300*pdf_weibull(2.5,scale=11300,num=1000000,plot=True)[0]
-    #
-    # monte_carlo(performance(a,b,f),30000000,plot=True)
-    plt.show()
-    # #######The drafts section ends here###########
-    ##############################################
+#
+# if __name__=='__main__':
+#     ###################################
+#     # #####The drafts section ###########
+#     #
+#     def performance(a,b,f):
+#
+#         p=f/a/b
+#         return p
+#     #
+#     a=pdf_triangular(0.019,0.02,0.021,num=10000,seed=1000)[0]
+#     b=pdf_triangular(0.0285,0.03,0.0315,num=10000,seed=1000)[0]
+#     f=pdf_weibull(2.5,scale=11300,num=10000,plot=False,seed=1000)[0]
+#     # g=cdf_weibull(2.5,scale=11300,num=1000, plot=True)
+#
+#     monte_carlo(performance(a,b,f), 7699789,plot=True)
+#     plt.show()
+#     # #######The drafts section ends here###########
+#     ##############################################
