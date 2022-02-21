@@ -1,7 +1,6 @@
 import pandas as pd
-
-import pwploter #only for documentation
-# from PyWinda import pwploter # for default and for pypi
+import pwploter #only for documentation and for gitub
+# from PyWinda import pwploter # for default (for checking pytest) and for pypi compilation
 import numpy as np
 from numpy.random import default_rng
 from time import perf_counter_ns
@@ -90,8 +89,8 @@ def cdf_normal(mean,sd,x=None,num=1000,plot=False,seed=None,bins=100):
     y = rng.normal(loc=mean, scale=sd, size=num)
     hist, bin_edges = np.histogram(y, bins=bins, density=True) #outputs all the number of outputs in every bin in density form.
     dx = bin_edges[-1] - bin_edges[-2] #dx is constant always
-    cumSum = np.cumsum(hist)
-    cumSum = cumSum * dx
+    cumSum = np.cumsum(abs(hist))
+    cumSum = cumSum * abs(dx)
     if x!=None and x>=bin_edges.min() and x<=bin_edges.max(): #checks whether the requested cdf from 0 to x is within the considered range of normal distribution.
         loc=None #location of the xs greater than or equal to x, finds where the x is located in the given range
         for ind,val in enumerate(bin_edges):
@@ -112,14 +111,14 @@ def cdf_normal(mean,sd,x=None,num=1000,plot=False,seed=None,bins=100):
                 break
         portion_of_y=y_sorted[:loc_y]
         if plot ==True:
-            figure, ax = pwploter.plot(final_xs, final_cumSum, title="Normal Distribution", xlabel='Values [-]',ylabel='Probability [-]',
+            figure, ax = pwploter.plot(final_xs, final_cumSum, title="Normal Distribution CDF", xlabel='Values [-]',ylabel='Probability [-]',
                                        text={'mean': mean, 'Standard deviation': sd, 'Number of samples': num,
                                              'Bins': bins, 'x':x})
             return portion_of_y,final_cumSum,final_xs, figure  # returns y and x and the final figure if plot
         elif plot==False:
-            return portion_of_y,cumSum,bin_edges  #returns y and x if not plot is done
+            return portion_of_y,final_cumSum,bin_edges  #returns y and x if not plot is done
     elif x==None and plot==True:
-        figure, ax = pwploter.plot(bin_edges[1:], cumSum, title="Normal Distribution", xlabel='Values [-]',
+        figure, ax = pwploter.plot(bin_edges[1:], cumSum, title="Normal Distribution CDF", xlabel='Values [-]',
                                    ylabel='Probability [-]',
                                    text={'mean': mean, 'Standard deviation': sd, 'Number of samples': num,
                                          'Bins': bins})
@@ -365,6 +364,234 @@ def cdf_weibull(shape,scale=1,x=None,num=1000,plot=False,seed=None,bins=100):
     else: # if the x is outside the +-5 times the standard deviation.
         raise Exception ("Out of range, please make sure that the point of interest x is with the range.")
 
+def pdf_poisson(mean=1,num=1000,plot=False,seed=None):
+    """
+            This function generates the Poisson probabiliyt mass function, for a given mean value.
+
+            :param mean: [*req*] mean of the Poisson distribution.
+            :param num: [*optional*] number of samples, by default 1000.
+            :param plot: [*optional*] if True a figure will also be returned.
+            :param seed: [*optional*] use the same seed number to produce the same distribution.
+            :param bins: [*optional*] number of bins to divide the number of samples to. Default value is 100.
+            :return s,counts,bins, fig: s is the 1D-array of generated samples, counts is the 1D-array of corresponding probability values to different bins, bins is the 1D-array of bins, and fig is to retrieve generated figure, only if plot is set to True.
+
+            :Example:
+
+                        >>> from PyWinda import pywinda as pw
+                        >>> samples,pr,bins,fig=pdf_poisson(mean=2,plot=True,seed=15)
+                        >>> print(samples) #doctest:+ELLIPSIS
+                        [3 1 2...]
+                        >>> print(fig)
+                        Figure(1000x800)
+
+
+            \\----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    """
+    rng=default_rng(seed)
+    samples=rng.poisson(mean,size=num)
+    bins = np.arange(min(samples), max(samples) + 1.5) - 0.5
+    counts,bins_array=np.histogram(samples,bins=bins,density=True) #Done extra to return if plot is False.
+    def poisson(x, mean):
+        res=[]
+        for i in x:
+            res.append((int(mean) ** int(i)) * np.exp(-mean) / np.math.factorial(i))
+        return res
+    if plot:
+        figure, ax, counts_plot, bins_array_plot = pwploter.hist(samples, bins=bins,title="Poisson PMF (discrete distribution)",
+                                                       xlabel='Values [-]',
+                                                       ylabel='Probability [-]',
+                                                       text={'Mean': mean,
+                                                             'Number of samples': num})
+        ax.plot(np.unique(samples), poisson(x=np.unique(samples),mean=mean),linewidth=2, color=pred,marker='o') #TODO check the validity of the equation and add references
+        return samples, counts_plot, np.unique(samples), figure  # returns samples counts in bins, bins array and the figure.
+    else:
+        return samples, np.unique(samples), bins_array
+def cdf_poisson(mean=1,x=None,num=1000,plot=False,seed=None):
+    """
+        This function generates the cumulative distribution function of the Poisson distributin function with the given parameters.
+
+        :param mean: [*req*] mean of the Poisson distribution.
+        :param x: [*optional*] any positive integer within the range of CDF, if given CDF will be calculated until this point.
+        :param num: [*optional*] number of samples, by default 1000.
+        :param plot: [*optional*] if True a figure will also be returned.
+        :param seed: [*optional*] use the same seed number to produce the same distribution.
+        :param bins: [*optional*] number of bins to divide the number of samples to. Default value is 100.
+        :return s,cumSum,bins, fig: s is the 1D-array of generated values, cumSum is the 1D-array of calculated cumulative probability values, bins is the 1D-array of bins, and fig is to retrieve generated figure, only if plot is set to True.
+
+        :Example:
+
+                    >>> from PyWinda import pywinda as pw
+                    >>> s,cdf,bins,fig=cdf_poisson(mean=3,plot=True,seed=148)
+                    >>> print(cdf) #doctest:+ELLIPSIS
+                    [0.047 0.191 0.414 0.641 0.803...]
+                    >>> print(fig)
+                    Figure(1000x800)
+
+
+        \\----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    """
+    rng = default_rng(seed)  # the default random number generator
+    y = rng.poisson(mean,size=num)
+    bins = np.arange(min(y), max(y) + 1.5) - 0.5
+    counts,bins_array=np.histogram(y,bins=bins,density=True) #in case no plot this will be returned
+    def poisson(x, mean):
+        res=[]
+        for i in x:
+            res.append((int(mean) ** int(i)) * np.exp(-mean) / np.math.factorial(i))
+        return res
+    hist, bin_edges = np.histogram(y, bins=bins, density=True) #outputs all the number of samples in every bin in density form.
+    uniques=bin_edges[:-1]+0.5 #excludes last element of the bin and adds 0.5 to show middle of the bins
+    dx = bin_edges[-1] - bin_edges[-2] #dx is constant always
+    cumSum = np.cumsum(hist)
+    cumSum = cumSum * dx
+    if x!=None and type(x)==int and x>=min(uniques) and x<=max(uniques): #checks whether the requested cdf from lowest to x is within the considered range of normal distribution.
+        loc=None #location of the xs greater than or equal to x, finds where the x is located in the given range
+        for ind,val in enumerate(uniques):
+            if val>=x:
+                loc=ind
+                break
+        xs=uniques[0:loc] #truncates only the portion of bin_edges less than x. element at index loc is not included.
+        xs=np.array(xs)
+        final_xs=np.append(xs,x) #x is added to the end of interval
+        cumSum_temp=cumSum[0:loc] #truncates only the portin of cumSum for all number less than x. element at loc is not inlcuded.
+        lastelement=cumSum_temp[-1]+poisson(x=[x],mean=mean) #last element plus width of the intervel times the height of the probability. For a Poisson distributio the width is always 1.
+        final_cumSum=np.append(cumSum_temp,lastelement)
+        y_sorted=np.sort(y)
+        loc_y=None
+        for index,value in enumerate(y_sorted):
+            if value>x: #selects all the values from sample sapce which are less then and equal to x
+                loc_y=index
+                break
+        portion_of_y=y_sorted[:loc_y] #selects all the values from sample sapce which are less then and equal to x
+        if plot ==True:
+            figure, ax = pwploter.plot(final_xs, final_cumSum, title="Weibull CDF", xlabel='Values [-]',ylabel='Probability [-]',
+                                       text={'Mean':mean,'Number of samples': num,
+                                             'x':x},style='o',axes_ticks='xy')
+            return portion_of_y,final_cumSum,final_xs, figure  # returns y and x and the final figure if plot
+        elif plot==False:
+            return np.array(portion_of_y),cumSum,bin_edges  #returns y and x if not plot is done
+    elif x==None and plot==True:
+        figure, ax = pwploter.plot(uniques, cumSum, title="Poisson CDF (Discrete distribution)", xlabel='Values [-]',
+                                   ylabel='Probability [-]',
+                                   text={'Shape':mean,'Number of samples': num},style='o',axes_ticks='x')
+        return y,cumSum,uniques ,figure  # returns y and x and the final figure if plot
+    elif x==None and plot==False:
+        return y,cumSum,uniques
+    else: # if the x is outside the +-5 times the standard deviation.
+        raise Exception ("Out of range, please make sure that the point of interest x is within the range and it is a positive integer.")
+
+
+def pdf_exponential(rate,num=1000,plot=False,seed=None,bins=100):
+    """
+            This function generates the exponential probabiliyt density function, for a given mean value.
+
+            :param shape: [*req*] rate of the exponenetial distribution which is mean (arriavl rate) of its Poisson distribution.
+            :param num: [*optional*] number of samples, by default 1000.
+            :param plot: [*optional*] if True a figure will also be returned.
+            :param seed: [*optional*] use the same seed number to produce the same distribution.
+            :param bins: [*optional*] number of bins to divide the number of samples to. Default value is 100.
+            :return s,counts,bins, fig: s is the 1D-array of generated samples, counts is the 1D-array of corresponding probability values to different bins, bins is the 1D-array of bins edges, and fig is to retrieve generated figure, only if plot is set to True.
+
+            :Example:
+
+                        >>> from PyWinda import pywinda as pw
+                        >>> samples,pr,bins,fig=pdf_exponential(rate=2,plot=True,seed=15)
+                        >>> print(samples) #doctest:+ELLIPSIS
+                        [1.24985756e+00 7.61165330e-01 1.45083129e-01 2.05765792e-02...]
+                        >>> print(fig)
+                        Figure(1000x800)
+
+
+            \\----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    """
+    rng=default_rng(seed)
+    samples=rng.exponential(1/rate,size=num)
+    counts,bins_array=np.histogram(samples,bins=bins,density=True)
+
+    def expon(x, rate):
+        return rate * np.exp(-(x *rate))
+    if plot:
+        figure, ax, counts_plot, bins_array_plot = pwploter.hist(samples, bins=bins,title="Exponential distribution PDF",
+                                                       xlabel='Values [-]',
+                                                       ylabel='Probability [-]',
+                                                       text={'Rate [mean of Poisson counter part]': rate,
+                                                             'Number of samples': num, 'Bins': bins})
+        ax.plot(bins_array_plot, expon(bins_array_plot,rate=rate),linewidth=2, color=pred)
+        return samples, counts_plot, bins_array_plot, figure  # returns samples counts in bins, bins array and the figure.
+    else:
+        return samples, counts, bins_array
+def cdf_exponential(rate,scale=1,x=None,num=1000,plot=False,seed=None,bins=100): #TODO needs more work and approval
+    """
+        This function generates the cumulative distribution function of the exponential distributin function with the given parameters.
+
+        :param shape: [*req*] rate of the exponenetial distribution which is mean (arriavl rate) of its Poisson distribution.
+        :param x: [*optional*] any positive real number within the range of CDF, if given the CDF will be calculated until this point.
+        :param num: [*optional*] number of samples, by default 1000.
+        :param plot: [*optional*] if True a figure will also be returned.
+        :param seed: [*optional*] use the same seed number to produce the same distribution.
+        :param bins: [*optional*] number of bins to divide the number of samples to. Default value is 100.
+        :return s,cumSum,bins, fig: s is the 1D-array of generated values, cumSum is the 1D-array of calculated cumulative probability values, bins is the 1D-array of bins edges, and fig is to retrieve generated figure, only if plot is set to True.
+
+        :Example:
+
+                    >>> from PyWinda import pywinda as pw
+                    >>> s,cdf,bins,fig=cdf_exponential(rate=3,plot=True,seed=148)
+                    >>> print(cdf) #doctest:+ELLIPSIS
+                    [0.059 0.117 0.172 0.235 0.292 0.334 0.392 0.443 0.473...]
+                    >>> print(fig)
+                    Figure(1000x800)
+
+
+        \\----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    """
+    rng = default_rng(seed)  # the default random number generator
+    y=rng.exponential(1/rate,size=num)
+    hist, bin_edges = np.histogram(y, bins=bins, density=True) #outputs all the number of samples in every bin in density form.
+    dx = bin_edges[-1] - bin_edges[-2] #dx is constant always
+    cumSum = np.cumsum(hist)
+    cumSum = cumSum * dx
+
+    if x!=None and x>=bin_edges.min() and x<=bin_edges.max(): #checks whether the requested cdf from lowest to x is within the considered range of normal distribution.
+        loc=None #location of the xs greater than or equal to x, finds where the x is located in the given range
+        for ind,val in enumerate(bin_edges):
+            if val>=x:
+                loc=ind
+                break
+        xs=bin_edges[0:loc] #truncates only the portion of bin_edges less than x. element at index loc is not included.
+        xs=np.array(xs)
+        final_xs=np.append(xs,x) #x is added to the end of interval
+        cumSum_temp=cumSum[0:loc] #truncates only the potin of cumSum for all number less than x. element at loc is not inlcuded.
+        lastelement=cumSum_temp[-1]+(bin_edges[loc]-x)*rate * np.exp(-(x *rate)) #last element plus width of the intervel times the height of the probability.
+        final_cumSum=np.append(cumSum_temp,lastelement)
+        y_sorted=np.sort(y)
+        loc_y=None
+        for index,value in enumerate(y_sorted):
+            if value>=x:
+                loc_y=index
+                break
+        portion_of_y=y_sorted[:loc_y]
+        if plot ==True:
+            figure, ax = pwploter.plot(final_xs, final_cumSum, title="Exponential CDF", xlabel='Values [-]',ylabel='Probability [-]',
+                                       text={'Rate':rate,'Number of samples': num,
+                                             'Bins': bins, 'x':x})
+            return portion_of_y,final_cumSum,final_xs, figure  # returns y and x and the final figure if plot
+        elif plot==False:
+            return portion_of_y,cumSum,bin_edges  #returns y and x if not plot is done
+    elif x==None and plot==True:
+        figure, ax = pwploter.plot(bin_edges[1:], cumSum, title="Weibull CDF", xlabel='Values [-]',
+                                   ylabel='Probability [-]',
+                                   text={'Rate':rate,'Number of samples': num,
+                                         'Bins': bins})
+        return y,cumSum,bin_edges ,figure  # returns y and x and the final figure if plot
+    elif x==None and plot==False:
+        return y,cumSum,bin_edges
+    else: # if the x is outside the +-5 times the standard deviation.
+        raise Exception ("Out of range, please make sure that the point of interest x is with the range.")
+
 
 def monte_carlo(performance_Func,condition=None,report=False,plot=False):
     start=perf_counter_ns()
@@ -424,21 +651,45 @@ def monte_carlo(performance_Func,condition=None,report=False,plot=False):
 
 
 #
-# if __name__=='__main__':
-#     ###################################
-#     # #####The drafts section ###########
-#     #
-#     def performance(a,b,f):
-#
-#         p=f/a/b
-#         return p
-#     #
-#     a=pdf_triangular(0.019,0.02,0.021,num=10000,seed=1000)[0]
-#     b=pdf_triangular(0.0285,0.03,0.0315,num=10000,seed=1000)[0]
-#     f=pdf_weibull(2.5,scale=11300,num=10000,plot=False,seed=1000)[0]
-#     # g=cdf_weibull(2.5,scale=11300,num=1000, plot=True)
-#
-#     monte_carlo(performance(a,b,f), 7699789,plot=True)
-#     plt.show()
-#     # #######The drafts section ends here###########
-#     ##############################################
+if __name__=='__main__':
+    ###################################
+    # #####The drafts section ###########
+    #
+    # def performance(a,b,f):
+    #
+    #     p=f/a/b
+    #     return p
+    # #
+    # a=pdf_triangular(0.019,0.02,0.021,num=10000,plot=False,bins=100)[0]
+    # b=pdf_triangular(0.0285,0.03,0.0315,num=10000)[0]
+    # f=pdf_weibull(2.5,scale=11300,num=10000,plot=False)[0]
+    # # g=cdf_weibull(2.5,scale=11300,num=1000, plot=True)
+    #
+    # monte_carlo(performance(a,b,f), 7699789,plot=True)
+    # plt.plot(a)
+    # plt.plot(b)
+    # plt.plot(f)
+    # d=pdf_poisson(mean=19,plot=True,seed=500,num=1000)
+    # d,a,b,g=pdf_exponential(rate=2,plot=True,seed=15,num=100000)
+    # d,a,b,g=cdf_normal(mean=0,sd=1,x=-1,plot=True,seed=148,num=100)
+    # print(d)
+    # print(a)
+    # s,cdf,bins,fig=cdf_poisson(mean=3,plot=True,seed=148)
+
+    # print(d)
+    # print(b)
+    # d=cdf_poisson(mean=4,plot=True,seed=500,num=1000)
+
+
+    # d=pdf_exponential(rate=0.017,num=1000,plot=True)
+    # x1=[1,2,34,5]
+    # x1=np.array(x1)
+    # print(np.math.factorial((x1)))
+    # samples,cdf,x,fig=cdf_normal(mean=0,sd=1,x=1,plot=True,seed=148)
+    # samples,cdf1,x,fig=cdf_normal(mean=0,sd=1,x=-1,plot=True,seed=148)
+    samples,cdf,x,f=cdf_normal(mean=0,sd=1,x=1,plot=True)
+
+    print(max(cdf))
+    plt.show()
+    # #######The drafts section ends here###########
+    ##############################################

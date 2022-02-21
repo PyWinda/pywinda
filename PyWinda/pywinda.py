@@ -808,7 +808,6 @@ class SRT:
         self.y_vertical=y_vertical
         self.area=0.25*np.pi*self.diameter**2
         self.lifeTime=None
-
         self.windspeeds=[i for i in np.arange(0,50.5,0.5)] #m/s
         self.interp_cp=[]
         if len(ws)==len(cp) and len(ws)!=0:
@@ -831,6 +830,15 @@ class SRT:
                     self.uID=srtUniqueID
             else:
                 raise Exception("Unique ID should be a string without spaces.")
+
+
+        #followings are default failure rates per turbine per year
+        self.failureRates={'FRbladesAndHub':0.27,'FRairbrake':0.05,'FRpitchSystem':0.90,'FRshaftsAndBearing':0.04,'FRmechBrake':0.08,'FRgearbox':0.41,'FRgenerator':0.32,'FRhydraulic':0.2,'FRYaw':0.2,'FRcontrolSystem':0.42,'FRelectrical':1.26,'FRsensors':0.4,'FRnacelle':0.05,'FRstructure':0.15,'FRother':0.25}
+        self.TFRList=[self.failureRates[key] for key in self.failureRates]
+        self.TFR = 0.0
+        for i in self.TFRList: self.TFR+=i
+
+
 
 
     @property
@@ -887,12 +895,14 @@ if __name__=='__main__':
 #-----------
     cur.assignEnvironment('normal1')
 
-    for i in range(100):
-        report = cur.run(randomWind=1000)['WT1_AEP[MWh]']
-        print(report)
+    # for i in range(100):
+    #     report = cur.run(randomWind=1000)['WT1_AEP[MWh]']
+    #     print(report)
     # print(report['Windfarm_AEP[MWh]'])
 
     # print(cur.lifetime)
+    for key in WT1.failureRates:
+        print(key,WT1.failureRates[key])
 
-
+    print(WT1.TFR)
 
