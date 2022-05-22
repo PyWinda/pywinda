@@ -1,6 +1,7 @@
 import pandas as pd
 import pwploter #only for documentation and for gitub
 # from PyWinda import pwploter # for default (for checking pytest) and for pypi compilation
+from PyWinda import pywinda #for default (for checking pytest) and for pypi compilation
 import numpy as np
 from numpy.random import default_rng
 from time import perf_counter_ns
@@ -606,25 +607,30 @@ def monte_carlo(performance_Func,condition=None,report=False,plot=False):
     for i in product:
         a=a+i
         cumSum.append(a)
-    print(cumSum)
-    # plt.plot(bin_edges[1:],cumSum)
+    # print(cumSum)
     # plt.show()
     P90=np.interp(0.1,cumSum,bin_edges[1:],left=None,right=None)  #P90 means 90% of the estimates exceed the P90 estimate. The Cumulative sum of 10% at x, tells us that the 10% of the values are x or less than x, meaning 90 of the rest is greater than x. P90 is here x.
     P75=np.interp(0.25,cumSum,bin_edges[1:],left=None,right=None)
     P50=np.interp(0.5,cumSum,bin_edges[1:],left=None,right=None)
+    P25=np.interp(0.75,cumSum,bin_edges[1:],left=None,right=None)
+    P10=np.interp(0.9,cumSum,bin_edges[1:],left=None,right=None)
+
 
     # print(hadaf)
     percentage_over='No conditions given'
-    percentage_belwo='No conditions given'
+    percentage_below='No conditions given'
     if plot==True:
-        figure, ax, counts, bins_array = pwploter.hist(result, density=True, bins=100, title="Simulation Results",
+        figure, ax, counts, bins_array = pwploter.hist(result, density=True, nrows=2,ncols=1,bins=100, title="Simulation Results",
                                                        xlabel='Values [-]',
                                                        ylabel='Probability [-]',
                                                        text={'Number of simulations': number_of_samples})
-        # ax.plot(bins_array, 1 / (sd * np.sqrt(2 * np.pi)) *
+
         #      np.exp(- (bins_array - mean) ** 2 / (2 * sd ** 2)),
         #      linewidth=2, color=pred)
         # return y,counts,bins_array, figure # returns samples counts in bins, bins array and the figure.
+
+        figure2,ax2=plt.subplots()
+        ax2.plot(bin_edges[1:], cumSum)
 
     if condition != None:
         lower = []
@@ -637,14 +643,16 @@ def monte_carlo(performance_Func,condition=None,report=False,plot=False):
         number_of_lower = len(lower)
         number_of_higher = len(higher)
         percentage_over=number_of_higher / number_of_samples * 100
-        percentage_belwo=number_of_lower / number_of_samples * 100
+        percentage_over=f'{round(percentage_over,2):.2f} %'
+        percentage_below=number_of_lower / number_of_samples * 100
+        percentage_below=f'{round(percentage_below,2):.2f} %'
 
 
 
     end = perf_counter_ns()
     duration=(end-start)/1000000 #convert the duration to milli seconds.
-    reports_Dic={'Property':['Duration of Monte Carlo Simulation','Percentage over '+ str(condition),'Percentage below '+ str(condition), 'Number of Simulations', 'mean value','Standard deviation','Variance', 'P90','P75','P50'],
-                 'Value':[f'{round(duration,2)} ms',f'{round(percentage_over,2):.2f} %',f'{round(percentage_belwo,2):.2f} %',number_of_samples,f'{round(result.mean(),3):.3f}',f'{round(result.std(),3):.3f}',f'{round(result.var(),3):.3f}',f'{round(P90,3):.3f}',f'{round(P75,3):.3f}',f'{round(P50,3):.3f}']}
+    reports_Dic={'Property':['Duration of Monte Carlo Simulation','Percentage over '+ str(condition),'Percentage below '+ str(condition), 'Number of Simulations', 'mean value','Standard deviation','Variance', 'P90','P75','P50','P25','P10'],
+                 'Value':[f'{round(duration,2)} ms', percentage_over,percentage_below,number_of_samples,f'{round(result.mean(),3):.3f}',f'{round(result.std(),3):.3f}',f'{round(result.var(),3):.3f}',f'{round(P90,3):.3f}',f'{round(P75,3):.3f}',f'{round(P50,3):.3f}',f'{round(P25,3):.3f}',f'{round(P10,3):.3f}']}
     report_dataframe=pd.DataFrame(reports_Dic)
 
     print(report_dataframe)
@@ -659,37 +667,103 @@ if __name__=='__main__':
     #
     #     p=f/a/b
     #     return p
-    # #
-    # a=pdf_triangular(0.019,0.02,0.021,num=10000,plot=False,bins=100)[0]
+
+    # a=pdf_triangular(0.019,0.02,0.021,num=10000,plot=False,bins=100,seed=1500)[0]
     # b=pdf_triangular(0.0285,0.03,0.0315,num=10000)[0]
     # f=pdf_weibull(2.5,scale=11300,num=10000,plot=False)[0]
-    # # g=cdf_weibull(2.5,scale=11300,num=1000, plot=True)
-    #
-    # monte_carlo(performance(a,b,f), 7699789,plot=True)
-    # plt.plot(a)
-    # plt.plot(b)
-    # plt.plot(f)
-    # d=pdf_poisson(mean=19,plot=True,seed=500,num=1000)
-    # d,a,b,g=pdf_exponential(rate=2,plot=True,seed=15,num=100000)
-    # d,a,b,g=cdf_normal(mean=0,sd=1,x=-1,plot=True,seed=148,num=100)
-    # print(d)
+    # g=cdf_weibull(2.5,scale=11300,num=1000, plot=True)
     # print(a)
-    # s,cdf,bins,fig=cdf_poisson(mean=3,plot=True,seed=148)
+    # monte_carlo(performance(a,b,f), 7699789,plot=True)
+    turbines=[]
+    CurslackFarm=pywinda.windfarm('Curslack')
+    for i in range(200): CurslackFarm.addTurbine(uniqueID='WT'+str(i))
+    # print(CurslackFarm.info)
+    # print(pywinda.WT0.TFR)
 
-    # print(d)
-    # print(b)
-    # d=cdf_poisson(mean=4,plot=True,seed=500,num=1000)
-
-
-    # d=pdf_exponential(rate=0.017,num=1000,plot=True)
-    # x1=[1,2,34,5]
-    # x1=np.array(x1)
-    # print(np.math.factorial((x1)))
-    # samples,cdf,x,fig=cdf_normal(mean=0,sd=1,x=1,plot=True,seed=148)
-    # samples,cdf1,x,fig=cdf_normal(mean=0,sd=1,x=-1,plot=True,seed=148)
-    samples,cdf,x,f=cdf_normal(mean=0,sd=1,x=1,plot=True)
-
-    print(max(cdf))
+    dist={}
+    for i in range (200):
+        dist['DistWT'+str(i+1)]=pdf_poisson(mean=5,num=10000000)[0]
+    # print(dist['DistWT1'])
+    res=[0 for i in range(10000000)]
+    for i in range(200):
+        res=res+dist['DistWT'+str(i+1)]
+    data=monte_carlo(res,plot=True)
+    # print(res)
+    # plt.hist(res,bins=100)
     plt.show()
+    # print(dist['DistWT1'])
+    # print(dist['DistWT2'])
+
+    # print(len(res))
+    # a=[1,2,3]
+    # b=[1,2,3]
+    # c=a+b
+    # print(c)
+    # value,counts=np.unique(res,return_counts=True)
+    #
+    # inds=[]
+    # for indx,i in enumerate(res):
+    #     # print(indx)
+    #     if i==107:
+    #         inds.append(indx)
+    #         # print(res[indx])
+    # print('Lenght of inds',len(inds))
+    # forms={}
+    # for index in inds:
+    #     temp=[]
+    #     for i in range(20):
+    #         temp.append(dist['DistWT' + str(i + 1)] [index])
+    #     forms[str(index)]=temp
+    # # print(forms)
+    # now=np.unique(forms)
+    # full=[]
+    # for key in forms:
+    #     full.append(tuple(forms[str(key)]))
+    # # full=[set(i) for i in full]
+    # print(len(full))
+    # print(len(set(full)))
+    # print('start of the for loop')
+    # matches=0
+    # for indx,i in enumerate(full):
+    #     # print('Now it is: ',indx)
+    #     for nxindex in np.arange(indx+1,len(full),1):
+    #         # print('Next is: ',nxindex)
+    #
+    #         if i==full[nxindex]:
+    #             # print('match')
+    #             matches=matches+1
+    #
+    #
+    #
+
+        # print(i)
+    #
+    # print('There are matches: ',matches)
+    # a=[1,2,3]
+    # b=[1,2,3]
+    # if a==b:
+    #     print('worked')
+    #
+    # print(np.unique(full))
+
+    # print(value)
+    # print(np.where(res==59)[0])
+    # print(count)
+    # print(index)
+    # print(value*count)
+    # print(np.cumsum(count*value))
+
+    # print('statis')
+    # print(np.mean(res))
+    # print(np.std(res))
+    # pwploter.plot(value,counts)
+    # cdf_normal(mean=50,sd=7,plot=True,num=100000)
+    # WT1=pywinda.SRT('Windturbin')
+    # print(WT1.TFR)
+    #
+    # samples,cdf,x=pdf_poisson(mean=WT1.TFR,plot=False,num=100000)
+    # monte_carlo(res,condition=25)
+    # print(max(np.cumsum(samples))/100000)
+    # plt.show()
     # #######The drafts section ends here###########
     ##############################################

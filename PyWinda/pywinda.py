@@ -901,8 +901,8 @@ if __name__=='__main__':
     # print(report['Windfarm_AEP[MWh]'])
 
     # print(cur.lifetime)
-    for key in WT1.failureRates:
-        print(key,WT1.failureRates[key])
-
-    print(WT1.TFR)
+    # for key in WT1.failureRates:
+    #     print(key,WT1.failureRates[key])
+    #
+    # print(WT1.TFR)
 
