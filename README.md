@@ -1,7 +1,9 @@
 # PyWinda
 \----------------------------------------------------------------------------------------------
 
- PyWinda library is developed to simplify the generic calculations for power and load analysis. 
+ PyWinda is an evolving tool designed for simulating the operation and maintenance (O&M) of wind turbines,
+ with a particular focus on multi-rotor wind turbine O&M. Currently under active development, PyWinda is 
+ not yet finished and is a work in progress.
 
  * For a complete documentation click [here!](https://pywinda.readthedocs.io/en/latest/)
 
