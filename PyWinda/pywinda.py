@@ -17,7 +17,7 @@ def weib_cumulative(x,A,k): #A is the scale and k is the shape factor
 
 class environment:
     """
-       Creates the stand-alone environment and returns it with the given unique ID. By default, wind speeds from 0 m/s to 50 m/s with an increment of 0.5 m/s and also 360 degree with 1 degree increment are also added. The temperature of 25 degree Celsius and pressure of 101325 Pa is assumed. See example below:
+       Creates the stand alone environment and returns it with the given unique ID. By default, wind speeds from 0 m/s to 50 m/s with an increment of 0.5 m/s and also 360 degree with 1 degree increment are also added. The temperature of 25 degree Celsius and pressure of 101325 Pa is assumed. See example below:
 
        :param uniqueID: [*req*] the given unique ID.
 
