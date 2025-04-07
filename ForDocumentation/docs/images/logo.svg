@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="709.60693mm"
+   height="293.66043mm"
+   viewBox="0 0 709.60693 293.66043"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   sodipodi:docname="logo.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.36756309"
+     inkscape:cx="701.92031"
+     inkscape:cy="991.66648"
+     inkscape:window-width="2560"
+     inkscape:window-height="1369"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(294.74582,14.552209)">
+    <g
+       id="Layer_x0020_1"
+       transform="matrix(0.26458333,0,0,0.26458333,-753.08089,-236.48511)">
+      <g
+         id="_2334977459440">
+        <text
+           id="text28"
+           fill="#0098da"
+           font-family="Impact"
+           font-weight="400"
+           font-size="694.44px"
+           x="1737.15"
+           y="1885.63">PyWinda</text>
+        <path
+           d="m 2132.24,960.42 c 40.35,103.74 16.28,133.17 21.23,198.69 l 283.61,5.77 c 319.47,2.82 1915.52,42.09 1972.85,16.08 6,-17.97 8.04,-29.7 -9.07,-53.71 -178.22,-33.21 -365.06,-61.8 -549.87,-91.69 L 3022.79,903.8 c -137.57,-20.2 -431.08,-73.97 -560.57,-63.71 -67.13,5.32 -264.15,84.82 -329.98,120.31 z"
+           id="path30"
+           fill="#0098da" />
+        <circle
+           cx="0"
+           cy="0"
+           r="211.25"
+           id="circle32"
+           fill="#0098da"
+           transform="matrix(0.799878,0.0139619,-0.013962,0.79988,1901.29,1080.38)" />
+      </g>
+    </g>
+  </g>
+</svg>
