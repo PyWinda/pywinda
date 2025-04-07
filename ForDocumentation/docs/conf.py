@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('../../PyWinda'))
 # -- Project information -----------------------------------------------------
 
 project = 'PyWinda'
-copyright = '2021, PyWind Authors'
+copyright = '2025, PyWind Authors'
 author = 'PyWind Authors'
 
 # The full version, including alpha/beta/rc tags
