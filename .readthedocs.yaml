@@ -18,5 +18,3 @@ python:
     - method: pip
       path: .
     - requirements: ForDocumentation/requirements.txt
-# Optional: if you need extra dependencies
-#  requirements_file: requirements.txt
